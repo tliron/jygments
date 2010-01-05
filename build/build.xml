@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<project name="Jygments" default="build">
+	
+	<property name="src" value="../modules/com.threecrickets.jygments/src" />
+	<property name="lib" value="../libraries" />
+	<property name="deploy" value="../modules/com.threecrickets.jygments/deploy" />
+	<property name="dist" value="./distribution" />
+	<property name="content" value="${dist}/content" />
+	<property name="tmp" value="./tmp" />
+
+	<target name="compile" description="Compile Jygments code">
+		<mkdir dir="${tmp}" />
+		<javac srcdir="${src}" destdir="${tmp}" target="1.5">
+			<classpath>
+				<fileset dir="${lib}/jackson/lib" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="javadoc" description="Create Jygments API docs">
+		<available file="${content}/doc/api" property="javadoc-present" />
+		<antcall target="javadoc-unless" />
+	</target>
+
+	<target name="javadoc-unless" description="Create Jygments API docs" unless="javadoc-present">
+		<javadoc access="protected" author="true" excludepackagenames="**.internal.*" destdir="${content}/doc/api" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" source="1.5" sourcepath="${src}" splitindex="true" use="true" version="true" windowtitle="Jygments 1.0" doctitle="Scipturian 1.0"  verbose="true">
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+			<classpath>
+				<fileset dir="${lib}/jackson/lib" />
+			</classpath>
+			<bottom>
+				<![CDATA[<i>Copyright &#169; 2009-2010 <a target="_top" href="http://www.threecrickets.com/">Three Crickets LLC</a>.</i>]]>
+			</bottom>
+		</javadoc>
+	</target>
+	
+	<target name="jar" depends="compile" description="Create Jygments jar">
+		<mkdir dir="${content}/lib" />
+		<jar destfile="${content}/lib/com.threecrickets.jygments.jar" basedir="${tmp}" />
+	</target>
+	
+	<target name="licenses" description="Fetch licences">
+		<copy todir="${content}/licenses/jackson">
+			<fileset dir="${lib}/jackson/license" />
+		</copy>
+	</target>
+	
+	<target name="libraries" depends="jar" description="Fetch libraries">
+		<copy todir="${content}/lib">
+			<fileset dir="${lib}/jackson/lib" />
+		</copy>
+	</target>
+	
+	<target name="src" description="Fetch Jygments source">
+		<copy todir="${content}/src">
+			<fileset dir="${src}" />
+		</copy>
+	</target>
+
+	<target name="deploy" depends="src, javadoc" description="Fetch deployment">
+		<copy todir="${content}">
+			<fileset dir="${deploy}" />
+		</copy>
+	</target>
+	
+	<target name="package" depends="libraries, licenses, deploy" description="Create Jygments zip">
+		<zip destfile="${dist}/jygments.zip" basedir="${content}" includes="**/*" />
+	</target>
+	
+	<target name="build" depends="package" description="Build distribution" />
+	
+	<target name="clean" description="Clean">
+		<delete dir="${tmp}" />
+		<delete dir="${dist}" />
+	</target>
+	
+	<target name="rebuild" depends="clean, build" description="Clean and build distribution" />
+
+</project>
