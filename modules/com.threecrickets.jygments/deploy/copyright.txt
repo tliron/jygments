@@ -3,7 +3,7 @@
 Copyright notice
 ================
 
-Version 1.0, April 2009
+Version 1.1, January 2010
 
 This software distribution is covered by this copyright notice.
   
@@ -15,5 +15,5 @@ agreements. For questions, please contact the copyright holder:
     3021 W. Wilson Ave. #3
     Chicago, IL 60625
     USA
-	http://www.threecrickets.com/
+	http://threecrickets.com/
     mailto:legal@threecrickets.com

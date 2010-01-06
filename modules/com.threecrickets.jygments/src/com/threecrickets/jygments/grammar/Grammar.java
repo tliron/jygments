@@ -6,7 +6,7 @@
  * <p>
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly from Three Crickets
- * at http://www.threecrickets.com/
+ * at http://threecrickets.com/
  */
 
 package com.threecrickets.jygments.grammar;
