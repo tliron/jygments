@@ -11,6 +11,7 @@
 
 package com.threecrickets.jygments.grammar;
 
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 /**
@@ -18,10 +19,19 @@ import java.util.regex.Pattern;
  */
 public abstract class Rule
 {
-	public Rule( Pattern pattern, State nextState )
+	public Rule( Pattern pattern, State... nextStates )
 	{
 		this.pattern = pattern;
-		this.nextState = nextState;
+		ArrayList<State> list = new ArrayList<State>( nextStates.length );
+		for( State nextState : nextStates )
+			list.add( nextState );
+		this.nextStates = list;
+	}
+
+	public Rule( Pattern pattern, Iterable<State> nextStates )
+	{
+		this.pattern = pattern;
+		this.nextStates = nextStates;
 	}
 
 	//
@@ -33,9 +43,9 @@ public abstract class Rule
 		return pattern;
 	}
 
-	public State getNextState()
+	public Iterable<State> getNextStates()
 	{
-		return nextState;
+		return nextStates;
 	}
 
 	// //////////////////////////////////////////////////////////////////////////
@@ -43,5 +53,5 @@ public abstract class Rule
 
 	private final Pattern pattern;
 
-	private final State nextState;
+	private final Iterable<State> nextStates;
 }

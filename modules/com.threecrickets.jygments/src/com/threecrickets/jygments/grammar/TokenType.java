@@ -59,7 +59,7 @@ public class TokenType
 
 	public static final TokenType Name_Builtin = create( "Name.Builtin", "nb" );
 
-	public static final TokenType Name_Builtin_Pseudo = create( "Builtin.Pseudo", "bp" );
+	public static final TokenType Name_Builtin_Pseudo = create( "Name.Builtin.Pseudo", "bp" );
 
 	public static final TokenType Name_Class = create( "Name.Class", "nc" );
 

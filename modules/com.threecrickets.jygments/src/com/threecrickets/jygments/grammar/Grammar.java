@@ -11,6 +11,7 @@
 
 package com.threecrickets.jygments.grammar;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +38,14 @@ public class Grammar extends NestedDef<Grammar>
 			addDef( state );
 		}
 		return state;
+	}
+
+	public Iterable<State> getStates( Iterable<String> stateNames )
+	{
+		ArrayList<State> states = new ArrayList<State>();
+		for( String stateName : stateNames )
+			states.add( getState( stateName ) );
+		return states;
 	}
 
 	//

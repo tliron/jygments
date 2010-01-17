@@ -27,7 +27,6 @@ import com.threecrickets.jygments.Filter;
 import com.threecrickets.jygments.ResolutionException;
 import com.threecrickets.jygments.grammar.Grammar;
 import com.threecrickets.jygments.grammar.Token;
-import com.threecrickets.jygments.grammar.TokenType;
 import com.threecrickets.jygments.grammar.def.ChangeStateTokenRuleDef;
 import com.threecrickets.jygments.grammar.def.IncludeDef;
 import com.threecrickets.jygments.grammar.def.PopStateTokenRuleDef;
@@ -229,17 +228,24 @@ public class Lexer extends Grammar
 		getState( stateName ).addDef( new IncludeDef( stateName, includedStateName ) );
 	}
 
-	protected void byGroups( String stateName, TokenType... tokenTypes )
-	{
-	}
-
-	protected void combined( String stateName, String... stateNames )
-	{
-	}
-
 	protected void rule( String stateName, String pattern, String tokenTypeName )
 	{
 		getState( stateName ).addDef( new TokenRuleDef( stateName, pattern, tokenTypeName ) );
+	}
+
+	protected void bygroups( String stateName, String pattern, Iterable<String> tokenTypeNames )
+	{
+
+	}
+
+	protected void bygroups( String stateName, String pattern, Iterable<String> tokenTypeNames, String nextStateName )
+	{
+
+	}
+
+	protected void rule( String stateName, String pattern, String tokenTypeName, Iterable<String> nextStateNames )
+	{
+
 	}
 
 	protected void rule( String stateName, String pattern, String tokenTypeName, String nextStateName )

@@ -11,6 +11,7 @@
 
 package com.threecrickets.jygments.grammar.def;
 
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import com.threecrickets.jygments.grammar.Grammar;
@@ -25,7 +26,15 @@ public class ChangeStateTokenRuleDef extends TokenRuleDef
 	public ChangeStateTokenRuleDef( String stateName, String pattern, String tokenTypeName, String nextStateName )
 	{
 		super( stateName, pattern, tokenTypeName );
-		this.nextStateName = nextStateName;
+		ArrayList<String> list = new ArrayList<String>( 1 );
+		list.add( nextStateName );
+		this.nextStateNames = list;
+	}
+
+	public ChangeStateTokenRuleDef( String stateName, String pattern, String tokenTypeName, Iterable<String> nextStateNames )
+	{
+		super( stateName, pattern, tokenTypeName );
+		this.nextStateNames = nextStateNames;
 	}
 
 	//
@@ -35,11 +44,11 @@ public class ChangeStateTokenRuleDef extends TokenRuleDef
 	@Override
 	protected TokenRule createTokenRule( Pattern pattern, TokenType tokenType, Grammar grammar )
 	{
-		return new TokenRule( pattern, tokenType, grammar.getState( nextStateName ), 0 );
+		return new TokenRule( pattern, tokenType, grammar.getStates( nextStateNames ), 0 );
 	}
 
 	// //////////////////////////////////////////////////////////////////////////
 	// Private
 
-	private final String nextStateName;
+	private final Iterable<String> nextStateNames;
 }

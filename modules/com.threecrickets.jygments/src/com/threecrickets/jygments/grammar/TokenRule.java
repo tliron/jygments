@@ -20,12 +20,19 @@ public class TokenRule extends Rule
 {
 	public TokenRule( Pattern pattern, TokenType tokenType )
 	{
-		this( pattern, tokenType, null, 0 );
+		this( pattern, tokenType, (Iterable<State>) null, 0 );
 	}
 
 	public TokenRule( Pattern pattern, TokenType tokenType, State nextState, int depth )
 	{
 		super( pattern, nextState );
+		this.tokenType = tokenType;
+		this.depth = depth;
+	}
+
+	public TokenRule( Pattern pattern, TokenType tokenType, Iterable<State> nextStates, int depth )
+	{
+		super( pattern, nextStates );
 		this.tokenType = tokenType;
 		this.depth = depth;
 	}

@@ -52,6 +52,10 @@ public abstract class Jygments
 	{
 		String code = " p { width: 10px; }\np { width: 10px; }\n h1 { line-height: 100%; }\n";
 		Lexer lexer = Lexer.getByName( "css" );
+		
+		code = "from sys import out";
+		lexer = Lexer.getByName( "python" );
+		
 		Formatter formatter = Formatter.getByName( "html" );
 		highlight( code, lexer, formatter, new PrintWriter( System.out ) );
 		highlight( code, lexer, formatter, new PrintWriter( new FileWriter( "css.html" ) ) );
