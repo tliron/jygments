@@ -11,6 +11,8 @@
 
 package com.threecrickets.jygments.grammar.def;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -26,11 +28,21 @@ import com.threecrickets.jygments.grammar.TokenType;
  */
 public class TokenRuleDef extends Def<Grammar>
 {
-	public TokenRuleDef( String stateName, String pattern, String tokenTypeName )
+	public TokenRuleDef( String stateName, String pattern, List<String> tokenTypeNames )
 	{
 		this.stateName = stateName;
 		this.pattern = pattern;
-		this.tokenTypeName = tokenTypeName;
+		this.tokenTypeNames = tokenTypeNames;
+	}
+
+	public TokenRuleDef( String stateName, String pattern, String... tokenTypeNames )
+	{
+		this.stateName = stateName;
+		this.pattern = pattern;
+		ArrayList<String> list = new ArrayList<String>( tokenTypeNames.length );
+		for( String tokenTypeName : tokenTypeNames )
+			list.add( tokenTypeName );
+		this.tokenTypeNames = list;
 	}
 
 	//
@@ -47,9 +59,9 @@ public class TokenRuleDef extends Def<Grammar>
 		return pattern;
 	}
 
-	public String getTokenTypeName()
+	public List<String> getTokenTypeNames()
 	{
-		return tokenTypeName;
+		return tokenTypeNames;
 	}
 
 	//
@@ -69,11 +81,16 @@ public class TokenRuleDef extends Def<Grammar>
 			throw new ResolutionException( "RegEx syntax error: " + this.pattern, x );
 		}
 
-		TokenType tokenType = TokenType.getTokenTypeByName( tokenTypeName );
-		if( tokenType == null )
-			throw new ResolutionException( "Unknown token type: " + tokenTypeName );
+		ArrayList<TokenType> tokenTypes = new ArrayList<TokenType>();
+		for( String tokenTypeName : tokenTypeNames )
+		{
+			TokenType tokenType = TokenType.getTokenTypeByName( tokenTypeName );
+			if( tokenType == null )
+				throw new ResolutionException( "Unknown token type: " + tokenTypeName );
+			tokenTypes.add( tokenType );
+		}
 
-		TokenRule rule = createTokenRule( pattern, tokenType, grammar );
+		TokenRule rule = createTokenRule( pattern, tokenTypes, grammar );
 		State state = grammar.getState( stateName );
 		state.addRule( rule );
 		resolved = true;
@@ -87,15 +104,15 @@ public class TokenRuleDef extends Def<Grammar>
 	@Override
 	public String toString()
 	{
-		return super.toString() + " " + stateName + ", " + pattern + ", " + tokenTypeName;
+		return super.toString() + " " + stateName + ", " + pattern + ", " + tokenTypeNames;
 	}
 
 	// //////////////////////////////////////////////////////////////////////////
 	// Protected
 
-	protected TokenRule createTokenRule( Pattern pattern, TokenType tokenType, Grammar grammar )
+	protected TokenRule createTokenRule( Pattern pattern, List<TokenType> tokenTypes, Grammar grammar ) throws ResolutionException
 	{
-		return new TokenRule( pattern, tokenType );
+		return new TokenRule( pattern, tokenTypes );
 	}
 
 	// //////////////////////////////////////////////////////////////////////////
@@ -105,5 +122,5 @@ public class TokenRuleDef extends Def<Grammar>
 
 	private final String pattern;
 
-	private final String tokenTypeName;
+	private final List<String> tokenTypeNames;
 }

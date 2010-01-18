@@ -25,12 +25,11 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import com.threecrickets.jygments.Filter;
 import com.threecrickets.jygments.ResolutionException;
+import com.threecrickets.jygments.Util;
 import com.threecrickets.jygments.grammar.Grammar;
 import com.threecrickets.jygments.grammar.Token;
 import com.threecrickets.jygments.grammar.def.ChangeStateTokenRuleDef;
 import com.threecrickets.jygments.grammar.def.IncludeDef;
-import com.threecrickets.jygments.grammar.def.PopStateTokenRuleDef;
-import com.threecrickets.jygments.grammar.def.PushStateTokenRuleDef;
 import com.threecrickets.jygments.grammar.def.TokenRuleDef;
 
 /**
@@ -78,11 +77,12 @@ public class Lexer extends Grammar
 		InputStream stream = Lexer.class.getClassLoader().getResourceAsStream( fullName.replace( '.', '/' ) + ".json" );
 		if( stream != null )
 		{
-			ObjectMapper objectMapper = new ObjectMapper();
-			objectMapper.getJsonFactory().configure( JsonParser.Feature.ALLOW_COMMENTS, true );
 			try
 			{
-				Map<String, Object> json = objectMapper.readValue( stream, HashMap.class );
+				String converted = Util.rejsonToJson( stream );
+				ObjectMapper objectMapper = new ObjectMapper();
+				objectMapper.getJsonFactory().configure( JsonParser.Feature.ALLOW_COMMENTS, true );
+				Map<String, Object> json = objectMapper.readValue( converted, HashMap.class );
 				Object className = json.get( "class" );
 				if( className == null )
 					className = "";
@@ -228,11 +228,6 @@ public class Lexer extends Grammar
 		getState( stateName ).addDef( new IncludeDef( stateName, includedStateName ) );
 	}
 
-	protected void rule( String stateName, String pattern, String tokenTypeName )
-	{
-		getState( stateName ).addDef( new TokenRuleDef( stateName, pattern, tokenTypeName ) );
-	}
-
 	protected void bygroups( String stateName, String pattern, Iterable<String> tokenTypeNames )
 	{
 
@@ -243,35 +238,27 @@ public class Lexer extends Grammar
 
 	}
 
-	protected void rule( String stateName, String pattern, String tokenTypeName, Iterable<String> nextStateNames )
+	protected void rule( String stateName, String pattern, String tokenTypeName )
 	{
-
+		getState( stateName ).addDef( new TokenRuleDef( stateName, pattern, tokenTypeName ) );
 	}
 
 	protected void rule( String stateName, String pattern, String tokenTypeName, String nextStateName )
 	{
-		if( ( nextStateName != null ) && ( nextStateName.startsWith( "#pop" ) ) )
+		getState( stateName ).addDef( new ChangeStateTokenRuleDef( stateName, pattern, new String[]
 		{
-			int depth = 0;
-			if( nextStateName.length() > 4 )
-			{
-				String depthString = nextStateName.substring( 5 );
-				try
-				{
-					depth = Integer.parseInt( depthString );
-				}
-				catch( NumberFormatException x )
-				{
-				}
-			}
-			getState( stateName ).addDef( new PopStateTokenRuleDef( stateName, pattern, tokenTypeName, depth ) );
-		}
-		else if( ( nextStateName != null ) && ( nextStateName.startsWith( "#push" ) ) )
-		{
-			getState( stateName ).addDef( new PushStateTokenRuleDef( stateName, pattern, tokenTypeName, 0 ) );
-		}
-		else
-			getState( stateName ).addDef( new ChangeStateTokenRuleDef( stateName, pattern, tokenTypeName, nextStateName ) );
+			tokenTypeName
+		}, nextStateName ) );
+	}
+
+	protected void rule( String stateName, String pattern, String[] tokenTypeNames )
+	{
+		getState( stateName ).addDef( new TokenRuleDef( stateName, pattern, tokenTypeNames ) );
+	}
+
+	protected void rule( String stateName, String pattern, String[] tokenTypeNames, String... nextStateNames )
+	{
+		getState( stateName ).addDef( new ChangeStateTokenRuleDef( stateName, pattern, tokenTypeNames, nextStateNames ) );
 	}
 
 	protected void addJson( Map<String, Object> json ) throws ResolutionException

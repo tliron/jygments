@@ -11,6 +11,7 @@
 
 package com.threecrickets.jygments.grammar;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -18,43 +19,28 @@ import java.util.regex.Pattern;
  */
 public class TokenRule extends Rule
 {
-	public TokenRule( Pattern pattern, TokenType tokenType )
+	public TokenRule( Pattern pattern, List<TokenType> tokenTypes )
 	{
-		this( pattern, tokenType, (Iterable<State>) null, 0 );
+		this( pattern, tokenTypes, (List<State>) null );
 	}
 
-	public TokenRule( Pattern pattern, TokenType tokenType, State nextState, int depth )
-	{
-		super( pattern, nextState );
-		this.tokenType = tokenType;
-		this.depth = depth;
-	}
-
-	public TokenRule( Pattern pattern, TokenType tokenType, Iterable<State> nextStates, int depth )
+	public TokenRule( Pattern pattern, List<TokenType> tokenTypes, List<State> nextStates )
 	{
 		super( pattern, nextStates );
-		this.tokenType = tokenType;
-		this.depth = depth;
+		this.tokenTypes = tokenTypes;
 	}
 
 	//
 	// Attributes
 	//
 
-	public TokenType getTokenType()
+	public List<TokenType> getTokenTypes()
 	{
-		return tokenType;
-	}
-
-	public int getDepth()
-	{
-		return depth;
+		return tokenTypes;
 	}
 
 	// //////////////////////////////////////////////////////////////////////////
 	// Private
 
-	private final TokenType tokenType;
-
-	private final int depth;
+	private final List<TokenType> tokenTypes;
 }

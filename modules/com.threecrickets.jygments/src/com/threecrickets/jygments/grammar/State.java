@@ -30,6 +30,22 @@ public class State extends NestedDef<Grammar>
 	public static final State Push = new State();
 
 	//
+	// Construction
+	//
+
+	public State()
+	{
+		super();
+	}
+
+	public State( State state1, State state2 )
+	{
+		super();
+		include( state1 );
+		include( state2 );
+	}
+
+	//
 	// Attributes
 	//
 

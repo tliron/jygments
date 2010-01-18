@@ -13,6 +13,7 @@ package com.threecrickets.jygments.grammar;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.threecrickets.jygments.Def;
@@ -40,11 +41,51 @@ public class Grammar extends NestedDef<Grammar>
 		return state;
 	}
 
-	public Iterable<State> getStates( Iterable<String> stateNames )
+	public State resolveState( String stateName ) throws ResolutionException
+	{
+		if( stateName.startsWith( "#pop" ) )
+		{
+			int depth = 1;
+			if( stateName.length() > 4 )
+			{
+				String depthString = stateName.substring( 5 );
+				try
+				{
+					depth = Integer.parseInt( depthString );
+				}
+				catch( NumberFormatException x )
+				{
+					throw new ResolutionException( x );
+				}
+			}
+			return new RelativeState( false, depth );
+		}
+		else if( stateName.startsWith( "#push" ) )
+		{
+			int depth = 1;
+			if( stateName.length() > 5 )
+			{
+				String depthString = stateName.substring( 6 );
+				try
+				{
+					depth = Integer.parseInt( depthString );
+				}
+				catch( NumberFormatException x )
+				{
+					throw new ResolutionException( x );
+				}
+			}
+			return new RelativeState( true, depth );
+		}
+
+		return getState( stateName );
+	}
+
+	public List<State> resolveStates( List<String> stateNames ) throws ResolutionException
 	{
 		ArrayList<State> states = new ArrayList<State>();
 		for( String stateName : stateNames )
-			states.add( getState( stateName ) );
+			states.add( resolveState( stateName ) );
 		return states;
 	}
 

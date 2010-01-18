@@ -22,11 +22,19 @@ import com.threecrickets.jygments.style.StyleElement;
  */
 public class StyleElementDef extends Def<Style>
 {
+	//
+	// Construction
+	//
+
 	public StyleElementDef( String tokenTypeName, String styleElementName )
 	{
 		this.tokenTypeName = tokenTypeName;
 		this.styleElementName = styleElementName;
 	}
+
+	//
+	// Def
+	//
 
 	@Override
 	public boolean resolve( Style style ) throws ResolutionException

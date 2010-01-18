@@ -12,8 +12,10 @@
 package com.threecrickets.jygments.grammar.def;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
+import com.threecrickets.jygments.ResolutionException;
 import com.threecrickets.jygments.grammar.Grammar;
 import com.threecrickets.jygments.grammar.TokenRule;
 import com.threecrickets.jygments.grammar.TokenType;
@@ -23,18 +25,19 @@ import com.threecrickets.jygments.grammar.TokenType;
  */
 public class ChangeStateTokenRuleDef extends TokenRuleDef
 {
-	public ChangeStateTokenRuleDef( String stateName, String pattern, String tokenTypeName, String nextStateName )
+	public ChangeStateTokenRuleDef( String stateName, String pattern, List<String> tokenTypeNames, List<String> nextStateNames )
 	{
-		super( stateName, pattern, tokenTypeName );
-		ArrayList<String> list = new ArrayList<String>( 1 );
-		list.add( nextStateName );
-		this.nextStateNames = list;
+		super( stateName, pattern, tokenTypeNames );
+		this.nextStateNames = nextStateNames;
 	}
 
-	public ChangeStateTokenRuleDef( String stateName, String pattern, String tokenTypeName, Iterable<String> nextStateNames )
+	public ChangeStateTokenRuleDef( String stateName, String pattern, String[] tokenTypeNames, String... nextStateNames )
 	{
-		super( stateName, pattern, tokenTypeName );
-		this.nextStateNames = nextStateNames;
+		super( stateName, pattern, tokenTypeNames );
+		ArrayList<String> list = new ArrayList<String>( nextStateNames.length );
+		for( String nextStateName : nextStateNames )
+			list.add( nextStateName );
+		this.nextStateNames = list;
 	}
 
 	//
@@ -42,13 +45,13 @@ public class ChangeStateTokenRuleDef extends TokenRuleDef
 	//
 
 	@Override
-	protected TokenRule createTokenRule( Pattern pattern, TokenType tokenType, Grammar grammar )
+	protected TokenRule createTokenRule( Pattern pattern, List<TokenType> tokenTypes, Grammar grammar ) throws ResolutionException
 	{
-		return new TokenRule( pattern, tokenType, grammar.getStates( nextStateNames ), 0 );
+		return new TokenRule( pattern, tokenTypes, grammar.resolveStates( nextStateNames ) );
 	}
 
 	// //////////////////////////////////////////////////////////////////////////
 	// Private
 
-	private final Iterable<String> nextStateNames;
+	private final List<String> nextStateNames;
 }

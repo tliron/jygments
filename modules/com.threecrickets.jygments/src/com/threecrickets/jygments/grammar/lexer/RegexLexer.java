@@ -20,11 +20,14 @@ import java.util.Queue;
 import java.util.regex.Matcher;
 
 import com.threecrickets.jygments.ResolutionException;
+import com.threecrickets.jygments.grammar.RelativeState;
 import com.threecrickets.jygments.grammar.Rule;
 import com.threecrickets.jygments.grammar.State;
 import com.threecrickets.jygments.grammar.Token;
 import com.threecrickets.jygments.grammar.TokenRule;
 import com.threecrickets.jygments.grammar.TokenType;
+import com.threecrickets.jygments.grammar.def.ChangeStateTokenRuleDef;
+import com.threecrickets.jygments.grammar.def.TokenRuleDef;
 
 /**
  * @author Tal Liron
@@ -35,7 +38,7 @@ public class RegexLexer extends Lexer
 	// Protected
 
 	@Override
-	public Iterable<Token> getTokensUnprocessed( String text )
+	public List<Token> getTokensUnprocessed( String text )
 	{
 		List<Token> tokens = new ArrayList<Token>();
 
@@ -65,34 +68,50 @@ public class RegexLexer extends Lexer
 
 					// Yes, so apply it!
 					State nextState = null;
-					int depth = 0;
 					if( rule instanceof TokenRule )
 					{
 						TokenRule tokenRule = (TokenRule) rule;
 						if( tokenRule.getNextStates() != null )
+						{
 							for( State aNextState : tokenRule.getNextStates() )
-								nextState = aNextState;
-						depth = tokenRule.getDepth();
-						tokens.add( new Token( pos, tokenRule.getTokenType(), matcher.group() ) );
+							{
+								if( nextState == null )
+									nextState = aNextState;
+								else
+									// Combine states
+									nextState = new State( nextState, aNextState );
+							}
+						}
+
+						List<TokenType> tokenTypes = tokenRule.getTokenTypes();
+						if( tokenTypes.size() == 1 )
+							// Single token
+							tokens.add( new Token( pos, tokenTypes.get( 0 ), matcher.group() ) );
+						else
+						{
+							if( tokenTypes.size() != matcher.groupCount() )
+								throw new RuntimeException( "The number of token types in the rule does not match the number of groups in the regular expression" );
+
+							// Multiple tokens by group
+							int group = 1;
+							for( TokenType tokenType : tokenTypes )
+								tokens.add( new Token( pos, tokenType, matcher.group( group++ ) ) );
+						}
 					}
 
 					// Change state
-					if( nextState != null )
+					if( nextState instanceof RelativeState )
 					{
-						if( nextState == State.Pop )
-						{
-							while( depth-- > 0 )
-								stateStack.remove();
-						}
-						else if( nextState == State.Push )
-						{
+						// Push or pop
+						RelativeState relativeState = (RelativeState) nextState;
+						if( relativeState.isPush() )
 							stateStack.add( state );
-						}
-						else if( nextState != null )
-						{
-							state = nextState;
-						}
+						else
+							for( int depth = relativeState.getDepth(); depth > 0; depth-- )
+								stateStack.remove();
 					}
+					else if( nextState != null )
+						state = nextState;
 
 					pos = matcher.end();
 					// System.out.println( pos );
@@ -140,10 +159,10 @@ public class RegexLexer extends Lexer
 			{
 				String patternName = entry.getKey();
 				Object patternObject = entry.getValue();
-				if( patternObject instanceof Iterable<?> )
+				if( patternObject instanceof List<?> )
 				{
 					StringBuilder pattern = new StringBuilder();
-					for( String patternElement : (Iterable<String>) patternObject )
+					for( String patternElement : (List<String>) patternObject )
 						pattern.append( patternElement );
 					patterns.put( patternName, pattern.toString() );
 				}
@@ -181,61 +200,59 @@ public class RegexLexer extends Lexer
 				}
 				else
 				{
-					// Use a pattern
+					// Command is a pattern
 					String pattern = command;
+
 					if( pattern.startsWith( "#" ) && patterns.containsKey( pattern.substring( 1 ) ) )
+						// Use a predefined pattern
 						pattern = patterns.get( pattern.substring( 1 ) );
 
-					// Command is a pattern
-					if( arguments instanceof Iterable<?> )
+					if( arguments instanceof List<?> )
 					{
 						List<Object> argumentsList = new ArrayList<Object>();
-						for( Object argument : (Iterable<Object>) arguments )
+						for( Object argument : (List<Object>) arguments )
 							argumentsList.add( argument );
 
-						String modifier = !argumentsList.isEmpty() ? (String) argumentsList.get( 0 ) : "";
-						if( modifier.equals( "#bygroups" ) )
+						Object tokenTypeNames = argumentsList.get( 0 );
+
+						if( argumentsList.size() == 1 )
 						{
-							if( argumentsList.size() == 1 )
-								throw new ResolutionException( "No few arguments for #bygroups rule in state \"" + stateName + "\"" );
-
-							Object tokenTypeNames = argumentsList.get( 1 );
-							if( !( tokenTypeNames instanceof Iterable<?> ) )
-								throw new ResolutionException( "Expected list of token type names for #bygroups rule in state \"" + stateName + "\"" );
-
-							if( argumentsList.size() == 2 )
-								bygroups( stateName, pattern, (Iterable<String>) tokenTypeNames );
-							else if( argumentsList.size() == 3 )
+							if( tokenTypeNames instanceof String )
 							{
-								Object nextStateName = argumentsList.get( 2 );
-								if( !( nextStateName instanceof String ) )
-									throw new ResolutionException( "Expected next state name for #bygroups rule in state \"" + stateName + "\"" );
-								bygroups( stateName, pattern, (Iterable<String>) tokenTypeNames, (String) nextStateName );
+								ArrayList<String> list = new ArrayList<String>( 1 );
+								list.add( (String) tokenTypeNames );
+								tokenTypeNames = list;
 							}
-							else
-								throw new ResolutionException( "Too many arguments for #bygroups in state \"" + stateName + "\"" );
-						}
-						else if( argumentsList.size() == 1 )
-						{
-							Object tokenTypeName = argumentsList.get( 0 );
-							if( !( tokenTypeName instanceof String ) )
-								throw new ResolutionException( "Expected token type name for rule in state \"" + stateName + "\"" );
 
-							rule( stateName, pattern, (String) tokenTypeName );
+							if( !( tokenTypeNames instanceof List<?> ) )
+								throw new ResolutionException( "Expected token type name or array of token type names in rule in state \"" + stateName + "\"" );
+
+							getState( stateName ).addDef( new TokenRuleDef( stateName, pattern, (List<String>) tokenTypeNames ) );
 						}
 						else if( argumentsList.size() == 2 )
 						{
-							Object tokenTypeName = argumentsList.get( 0 );
-							if( !( tokenTypeName instanceof String ) )
-								throw new ResolutionException( "Expected token type name for rule in state \"" + stateName + "\"" );
+							Object nextStateNames = argumentsList.get( 1 );
+							if( nextStateNames instanceof String )
+							{
+								ArrayList<String> list = new ArrayList<String>( 1 );
+								list.add( (String) nextStateNames );
+								nextStateNames = list;
+							}
 
-							Object nextStateName = argumentsList.get( 1 );
-							if( nextStateName instanceof Iterable<?> )
-								rule( stateName, pattern, (String) tokenTypeName, (Iterable<String>) nextStateName );
-							else if( nextStateName instanceof String )
-								rule( stateName, pattern, (String) tokenTypeName, (String) nextStateName );
-							else
-								throw new ResolutionException( "Expected next state name (string or list) for rule in state \"" + stateName + "\"" );
+							if( !( nextStateNames instanceof List<?> ) )
+								throw new ResolutionException( "Expected state name or array of state names in rule in state \"" + stateName + "\"" );
+
+							if( tokenTypeNames instanceof String )
+							{
+								ArrayList<String> list = new ArrayList<String>( 1 );
+								list.add( (String) tokenTypeNames );
+								tokenTypeNames = list;
+							}
+
+							if( !( tokenTypeNames instanceof List<?> ) )
+								throw new ResolutionException( "Expected token type name or array of token type names in rule in state \"" + stateName + "\"" );
+
+							getState( stateName ).addDef( new ChangeStateTokenRuleDef( stateName, pattern, (List<String>) tokenTypeNames, (List<String>) nextStateNames ) );
 						}
 						else
 							throw new ResolutionException( "Too many arguments for rule in state \"" + stateName + "\"" );

@@ -11,6 +11,13 @@
 
 package com.threecrickets.jygments;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * @author Tal Liron
  */
@@ -23,7 +30,80 @@ public class Util
 
 	public static String replace( String string, String occurence, String replacement )
 	{
-		return string.replace( literalRegEx( occurence ), replacement );
+		return string.replaceAll( literalRegEx( occurence ), replacement );
+	}
+
+	public static String rejsonToJson( InputStream stream ) throws IOException
+	{
+		StringBuilder rejsonBuilder = new StringBuilder();
+		String line;
+
+		try
+		{
+			BufferedReader reader = new BufferedReader( new InputStreamReader( stream, "UTF-8" ) );
+			while( ( line = reader.readLine() ) != null )
+				rejsonBuilder.append( line ).append( "\n" );
+		}
+		finally
+		{
+			stream.close();
+		}
+
+		String json = rejsonToJson( rejsonBuilder.toString(), true );
+		json = rejsonToJson( json, false );
+		return json;
+	}
+
+	public static String rejsonToJson( String rejson, boolean doubleQuote )
+	{
+		Matcher matcher = doubleQuote ? DOUBLE_QUOTED_STRING.matcher( rejson ) : SINGLE_QUOTED_STRING.matcher( rejson );
+		StringBuilder json = new StringBuilder();
+		int start = 0, end = 0, lastEnd = 0;
+		while( matcher.find() )
+		{
+			lastEnd = end;
+			start = matcher.start();
+			end = matcher.end();
+			if( ( start > 0 ) && ( rejson.charAt( start - 1 ) == 'r' ) )
+			{
+				// Convert Python-style r"" string to Java-compatible pattern
+				String string = rejson.substring( start + 1, end - 1 );
+				json.append( rejson.substring( lastEnd, start - 1 ) );
+				json.append( '\"' );
+				json.append( pythonRegExToJavaPattern( string, doubleQuote ) );
+				json.append( '\"' );
+			}
+			/*
+			 * else if( !doubleQuote ) { // From single quote to double quote
+			 * String string = rejson.substring( start + 1, end - 1 );
+			 * json.append( rejson.substring( lastEnd, start - 1 ) );
+			 * json.append( '\"' ); json.append( string.replaceAll( "\"",
+			 * "\\\\\"" ) ); json.append( '\"' ); }
+			 */
+			else
+			{
+				// As is
+				json.append( rejson.substring( lastEnd, end ) );
+			}
+		}
+		json.append( rejson.substring( end ) );
+		//System.out.println( json );
+		return json.toString();
+	}
+
+	public static String pythonRegExToJavaPattern( String pattern, boolean doubleQuote )
+	{
+		if( pattern.startsWith( "[]" ) )
+			pattern = pattern.substring( 2 );
+		if( pattern.endsWith( "[]" ) )
+			pattern = pattern.substring( 0, pattern.length() - 2 );
+		pattern = pattern.replaceAll( "\\\\", "\\\\\\\\" );
+		pattern = pattern.replaceAll( "\\{", "\\\\\\\\{" );
+		pattern = pattern.replaceAll( "\\}", "\\\\\\\\}" );
+		if( !doubleQuote )
+			pattern = pattern.replaceAll( "\"", "\\\\\"" );
+		System.out.println( pattern );
+		return pattern;
 	}
 
 	public static String escapeHtml( String text )
@@ -42,4 +122,8 @@ public class Util
 		text = text.replace( " ", "&nbsp;" );
 		return text;
 	}
+
+	private static final Pattern DOUBLE_QUOTED_STRING = Pattern.compile( "\"(?>\\\\.|.)*?\"" );
+
+	private static final Pattern SINGLE_QUOTED_STRING = Pattern.compile( "'(?>\\\\.|.)*?'" );
 }

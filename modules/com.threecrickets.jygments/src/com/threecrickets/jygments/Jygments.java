@@ -53,7 +53,7 @@ public abstract class Jygments
 		String code = " p { width: 10px; }\np { width: 10px; }\n h1 { line-height: 100%; }\n";
 		Lexer lexer = Lexer.getByName( "css" );
 		
-		code = "from sys import out";
+		code = "from sys import out\ndef pip(x):\n    pass";
 		lexer = Lexer.getByName( "python" );
 		
 		Formatter formatter = Formatter.getByName( "html" );
