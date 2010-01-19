@@ -9,7 +9,7 @@
  * at http://threecrickets.com/
  */
 
-package com.threecrickets.jygments.grammar.lexer;
+package com.threecrickets.jygments.grammar.def;
 
 import com.threecrickets.jygments.grammar.Token;
 

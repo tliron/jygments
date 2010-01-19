@@ -9,7 +9,7 @@
  * at http://threecrickets.com/
  */
 
-package com.threecrickets.jygments.scanner;
+package com.threecrickets.jygments.scan;
 
 import java.util.HashMap;
 import java.util.Map;

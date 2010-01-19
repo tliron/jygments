@@ -12,7 +12,7 @@
 package com.threecrickets.jygments.contrib;
 
 import com.threecrickets.jygments.ResolutionException;
-import com.threecrickets.jygments.grammar.lexer.RegexLexer;
+import com.threecrickets.jygments.grammar.def.RegexLexer;
 
 /**
  * @author Tal Liron

@@ -9,7 +9,7 @@
  * at http://threecrickets.com/
  */
 
-package com.threecrickets.jygments.grammar.lexer;
+package com.threecrickets.jygments.grammar.def;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,8 +25,6 @@ import com.threecrickets.jygments.grammar.State;
 import com.threecrickets.jygments.grammar.Token;
 import com.threecrickets.jygments.grammar.TokenRule;
 import com.threecrickets.jygments.grammar.TokenType;
-import com.threecrickets.jygments.grammar.def.ChangeStateTokenRuleDef;
-import com.threecrickets.jygments.grammar.def.TokenRuleDef;
 
 /**
  * @author Tal Liron

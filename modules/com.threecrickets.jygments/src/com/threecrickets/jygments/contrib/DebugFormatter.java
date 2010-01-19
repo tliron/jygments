@@ -9,11 +9,12 @@
  * at http://threecrickets.com/
  */
 
-package com.threecrickets.jygments.format;
+package com.threecrickets.jygments.contrib;
 
 import java.io.IOException;
 import java.io.Writer;
 
+import com.threecrickets.jygments.format.Formatter;
 import com.threecrickets.jygments.grammar.Token;
 import com.threecrickets.jygments.style.Style;
 

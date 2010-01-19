@@ -9,7 +9,7 @@
  * at http://threecrickets.com/
  */
 
-package com.threecrickets.jygments.scanner;
+package com.threecrickets.jygments.scan;
 
 /**
  * @author Tal Liron

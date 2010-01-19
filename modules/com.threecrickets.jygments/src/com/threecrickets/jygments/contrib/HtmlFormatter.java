@@ -9,7 +9,7 @@
  * at http://threecrickets.com/
  */
 
-package com.threecrickets.jygments.format;
+package com.threecrickets.jygments.contrib;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -18,6 +18,7 @@ import java.util.Map;
 
 import com.threecrickets.jygments.ResolutionException;
 import com.threecrickets.jygments.Util;
+import com.threecrickets.jygments.format.Formatter;
 import com.threecrickets.jygments.grammar.Token;
 import com.threecrickets.jygments.grammar.TokenType;
 import com.threecrickets.jygments.style.ColorStyleElement;
