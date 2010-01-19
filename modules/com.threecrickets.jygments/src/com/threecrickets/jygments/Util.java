@@ -93,10 +93,6 @@ public class Util
 
 	public static String pythonRegExToJavaPattern( String pattern, boolean doubleQuote )
 	{
-		if( pattern.startsWith( "[]" ) )
-			pattern = pattern.substring( 2 );
-		if( pattern.endsWith( "[]" ) )
-			pattern = pattern.substring( 0, pattern.length() - 2 );
 		pattern = pattern.replaceAll( "\\\\", "\\\\\\\\" );
 		pattern = pattern.replaceAll( "\\{", "\\\\\\\\{" );
 		pattern = pattern.replaceAll( "\\}", "\\\\\\\\}" );

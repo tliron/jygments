@@ -48,7 +48,7 @@
 			r"^(\s*)('''(?:.|\n)*?''')": [["Text", "String.Doc"]],
 			r'[^\S\n]+': "Text",
 			r'#.*$': "Comment",
-			"[\\]\\{\\}:(),;\\[]": "Punctuation",
+			r'[\]{}:(),;\[]': "Punctuation", /* square brackets were escaped for Jygments */
 			r'\\\n': "Text",
 			r'\\': "Text",
 			r'(in|is|and|or|not)\b': "Operator.Word",
@@ -102,31 +102,31 @@
 		"name":
 		{
 			r'@[a-zA-Z0-9_.]+': "Name.Decorator",
-			r"[a-zA-Z_][a-zA-Z0-9_]*": "Name"
+			r'[a-zA-Z_][a-zA-Z0-9_]*': "Name"
 		},
 
 		"funcname":
 		{
-			r"[a-zA-Z_][a-zA-Z0-9_]*": ["Name.Function", "#pop"]
+			r'[a-zA-Z_][a-zA-Z0-9_]*': ["Name.Function", "#pop"]
 		},
 
 		"classname":
 		{
-			r"[a-zA-Z_][a-zA-Z0-9_]*": ["Name.Class", "#pop"]
+			r'[a-zA-Z_][a-zA-Z0-9_]*': ["Name.Class", "#pop"]
 		},
 
 		"import":
 		{
 			r'((?:\s|\\\s)+)(as)((?:\s|\\\s)+)': [["Text", "Keyword.Namespace", "Text"]],
-			r"[a-zA-Z_][a-zA-Z0-9_.]*": "Name.Namespace",
+			r'[a-zA-Z_][a-zA-Z0-9_.]*': "Name.Namespace",
 			r'(\s*)(,)(\s*)': [["Text", "Operator", "Text"]],
-			r"": ["Text", "#pop"] /* all else: go back */
+			r'': ["Text", "#pop"] /* all else: go back */
 		},
 
 		"fromimport":
 		{
 			r'((?:\s|\\\s)+)(import)\b': [["Text", "Keyword.Namespace"], "#pop"],
-			r"[a-zA-Z_.][a-zA-Z0-9_.]*": "Name.Namespace"
+			r'[a-zA-Z_.][a-zA-Z0-9_.]*': "Name.Namespace"
 		},
 
 		"stringescape":
@@ -141,13 +141,13 @@
 			/* quotes, percents and backslashes must be parsed one at a time */
 			r'[\'"\\]': "String",
 			/* unhandled string formatting sign */
-			r"%": "String"
+			r'%': "String"
 			/* newlines are an error (use "nl" state) */
 		},
 
 		"nl":
 		{
-			r"\n": "String"
+			r'\n': "String"
 		},
 
 		"dqs":
@@ -173,7 +173,7 @@
 
 		"tsqs":
 		{
-			"'''": ["String", "#pop"],
+			r"'''": ["String", "#pop"],
 			"#include": "strings",
 			"#include": "nl"
 		}
