@@ -69,13 +69,15 @@ public class HtmlFormatter extends Formatter
 			writer.write( Util.escapeHtml( getTitle() ) );
 			writer.write( "</h2>\n" );
 		}
+		writer.write( "<div><pre>\n" );
 		StringBuilder line = new StringBuilder();
 		for( Token token : tokenSource )
 		{
 			if( token.getValue().equals( "\n" ) )
 			{
 				writer.write( line.toString() );
-				writer.write( "<br />\n" );
+				writer.write( '\n' );
+				// writer.write( "<br />\n" );
 				line = new StringBuilder();
 			}
 			else
@@ -85,19 +87,20 @@ public class HtmlFormatter extends Formatter
 					line.append( "<span class=\"" );
 					line.append( token.getType().getShortName() );
 					line.append( "\">" );
-					//line.append( token.getType().getName());
-					line.append( Util.asHtml( token.getValue() ) );
+					// line.append( token.getType().getName());
+					line.append( Util.escapeHtml( token.getValue() ) );
 					line.append( "</span>" );
 				}
 				else
-					line.append( Util.asHtml( token.getValue() ) );
+					line.append( Util.escapeHtml( token.getValue() ) );
 			}
 		}
 		if( line.length() > 0 )
 		{
 			writer.write( line.toString() );
-			writer.write( "<br />\n" );
+			// writer.write( "<br />\n" );
 		}
+		writer.write( "</pre></div>\n" );
 		writer.write( DOC_FOOTER );
 		writer.flush();
 	}

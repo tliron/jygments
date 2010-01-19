@@ -50,8 +50,8 @@
 			[r'}', "Punctuation", "#pop"],
 			[r'url\(.*?\)', "String.Other"],
 			[r'^@.*?$', "Comment.Preproc"],
-			["content.keyword", "Keyword"],
-			["content.builtin", "Name.Builtin"],
+			["#constant:keywords", "Keyword"],
+			["#constant:builtins", "Name.Builtin"],
 			[r'\!important', "Comment.Preproc"],
 			[r'/\*(?:.|\n)*?\*/', "Comment"],
 			[r'\#[a-zA-Z0-9]{1,6}', "Number"],
@@ -65,9 +65,9 @@
 		]
 	},
 	
-	"patterns":
+	"constants":
 	{
-		"content.keyword":
+		"keywords":
 		[
 			r"(azimuth|background-attachment|background-color|",
 			r"background-image|background-position|background-repeat|",
@@ -128,7 +128,7 @@
 			r"x-low|x-small|x-soft|xx-large|xx-small|yes)\b"
 		],
 		
-		"content.builtin":
+		"builtins":
 		[
 			r"(indigo|gold|firebrick|indianred|yellow|darkolivegreen|",
 			r"darkseagreen|mediumvioletred|mediumorchid|chartreuse|",

@@ -10,8 +10,8 @@
 *
 *  "#include": The value is the state to include.
 *
-* Rules are literal regular expressions, or references to regexes
-* defined in the "patterns" map.
+* Rules are literal regular expressions, or functions (beginning
+* with "#") applied to lists of strings in the "constants" map.
 *
 * Regex literals can use Python-style raw notation, prefixed with
 * "r". Both single-quotes and double-quoted raw notations are
@@ -79,9 +79,9 @@
 
 		"builtins":
 		[
-			["content.builtins", "Name.Builtin"],
+			["#constant:builtins", "Name.Builtin"],
 			[r'(?<!\.)(self|None|Ellipsis|NotImplemented|False|True)\b', "Name.Builtin.Pseudo"], 
-			["content.exceptions", "Name.Exception"]
+			["#constant:exceptions", "Name.Exception"]
 		],
 
 		"numbers":
@@ -179,9 +179,9 @@
 		]
 	},
 	
-	"patterns":
+	"constants":
 	{			
-		"content.builtins":
+		"builtins":
 		[
 			r"(?<!\.)(__import__|abs|all|any|apply|basestring|bin|bool|buffer|",
 			r"bytearray|bytes|callable|chr|classmethod|cmp|coerce|compile|",
@@ -194,7 +194,7 @@
 			r"vars|xrange|zip)\b"
 		],
 
-		"content.exceptions":
+		"exceptions":
 		[			
 			r"(?<!\.)(ArithmeticError|AssertionError|AttributeError|",
 			r"BaseException|DeprecationWarning|EOFError|EnvironmentError|",

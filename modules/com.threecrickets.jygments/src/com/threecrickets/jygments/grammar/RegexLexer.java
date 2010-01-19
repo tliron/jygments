@@ -154,29 +154,31 @@ public class RegexLexer extends Lexer
 	{
 		super.addJson( json );
 
-		// Initialize patterns
-		Object patternsObject = json.get( "patterns" );
-		Map<String, String> patterns = new HashMap<String, String>();
-		if( patternsObject != null )
+		// Initialize constants
+		Object constantsObject = json.get( "constants" );
+		Map<String, List<String>> constants = new HashMap<String, List<String>>();
+		if( constantsObject != null )
 		{
-			if( !( patternsObject instanceof Map<?, ?> ) )
-				throw new ResolutionException( "\"patterns\" must be a map" );
+			if( !( constantsObject instanceof Map<?, ?> ) )
+				throw new ResolutionException( "\"constants\" must be a map" );
 
-			for( Map.Entry<String, Object> entry : ( (Map<String, Object>) patternsObject ).entrySet() )
+			for( Map.Entry<String, Object> entry : ( (Map<String, Object>) constantsObject ).entrySet() )
 			{
-				String patternName = entry.getKey();
-				Object patternObject = entry.getValue();
-				if( patternObject instanceof List<?> )
+				String constantName = entry.getKey();
+				Object constantObject = entry.getValue();
+				ArrayList<String> strings = new ArrayList<String>();
+				constants.put( constantName, strings );
+				if( constantObject instanceof List<?> )
 				{
 					StringBuilder pattern = new StringBuilder();
-					for( String patternElement : (List<String>) patternObject )
+					for( String patternElement : (List<String>) constantObject )
 						pattern.append( patternElement );
-					patterns.put( patternName, pattern.toString() );
+					strings.add( pattern.toString() );
 				}
-				else if( patternObject instanceof String )
-					patterns.put( patternName, (String) patternObject );
+				else if( constantObject instanceof String )
+					strings.add( (String) constantObject );
 				else
-					throw new ResolutionException( "Unexpected value in \"patterns\" map: " + patternObject );
+					throw new ResolutionException( "Unexpected value in \"constants\" map: " + constantObject );
 			}
 		}
 
@@ -223,9 +225,21 @@ public class RegexLexer extends Lexer
 					// Command is a pattern
 					String pattern = (String) command;
 
-					if( patterns.containsKey( pattern ) )
-						// Use a predefined pattern
-						pattern = patterns.get( pattern );
+					if( pattern.startsWith( "#constant:" ) )
+					{
+						// Concatenate
+						StringBuilder builder = new StringBuilder();
+						String[] concatArguments = pattern.substring( 10 ).split( "," );
+						for( String concatArgument : concatArguments )
+						{
+							List<String> strings = constants.get( concatArgument );
+							if( strings == null )
+								throw new ResolutionException( "Unknown constant \"" + concatArgument + "\" for #pattern in state \"" + stateName + "\" must have at least a token type as an argument" );
+							for( String string : strings )
+								builder.append( string );
+						}
+						pattern = builder.toString();
+					}
 
 					if( argumentsList.size() < 2 )
 						throw new ResolutionException( "Rule in state \"" + stateName + "\" must have at least a token type as an argument" );
