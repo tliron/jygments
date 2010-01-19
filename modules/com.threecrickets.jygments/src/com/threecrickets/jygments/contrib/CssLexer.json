@@ -12,57 +12,57 @@
 	"states":
 	{
 		"root":
-		{
-			"#include": "basics"
-		},
+		[
+			["#include", "basics"]
+		],
 		
 		"basics":
-		{
-			r'\s+': "Text",
-			r'/\*(?:.|\n)*?\*/': "Comment",
-			r'{': ["Punctuation", "content"],
-			r'\:[a-zA-Z0-9_-]+': "Name.Decorator",
-			r'\.[a-zA-Z0-9_-]+': "Name.Class",
-			r'\#[a-zA-Z0-9_-]+': "Name.Function",
-			r'@[a-zA-Z0-9_-]+': ["Keyword", "atrule"],
-			r'[a-zA-Z0-9_-]+': "Name.Tag",
-			r'[~\^\*!%&\[\]\(\)<>\|+=@:;,./?-]': "Operator",
-			r'"(\\\\|\\"|[^"])*"': "String.Double",
-			r"'(\\\\|\\'|[^'])*'": "String.Single"
-		},
+		[
+			[r'\s+', "Text"],
+			[r'/\*(?:.|\n)*?\*/', "Comment"],
+			[r'{', "Punctuation", "content"],
+			[r'\:[a-zA-Z0-9_-]+', "Name.Decorator"],
+			[r'\.[a-zA-Z0-9_-]+', "Name.Class"],
+			[r'\#[a-zA-Z0-9_-]+', "Name.Function"],
+			[r'@[a-zA-Z0-9_-]+', "Keyword", "atrule"],
+			[r'[a-zA-Z0-9_-]+', "Name.Tag"],
+			[r'[~\^\*!%&\[\]\(\)<>\|+=@:;,./?-]', "Operator"],
+			[r'"(\\\\|\\"|[^"])*"', "String.Double"],
+			[r"'(\\\\|\\'|[^'])*'", "String.Single"]
+		],
 		
 		"atrules":
-		{
-			r'{': ["Punctuation", "atcontent"],
-			r';': ["Punctuation", "#pop"],
-			"#include": "basics"
-		},
+		[
+			[r'{', "Punctuation", "atcontent"],
+			[r';', "Punctuation", "#pop"],
+			["#include", "basics"]
+		],
 		
 		"atcontent":
-		{
-			"#include": "basics",
-			r'}': ["Punctuation", "#pop:2"]
-		},
+		[
+			["#include", "basics"],
+			[r'}', "Punctuation", "#pop:2"]
+		],
 		
 		"content":
-		{
-			r'\s+': "Text",
-			r'}': ["Punctuation", "#pop"],
-			r'url\(.*?\)': "String.Other",
-			r'^@.*?$': "Comment.Preproc",
-			"content.keyword" : "Keyword",
-			"content.builtin": "Name.Builtin",
-			r'\!important': "Comment.Preproc",
-			r'/\*(?:.|\n)*?\*/': "Comment",
-			r'\#[a-zA-Z0-9]{1,6}': "Number",
-			r'[\.-]?[0-9]*[\.]?[0-9]+(em|px|\%|pt|pc|in|mm|cm|ex)': "Number",
-			r'-?[0-9]+': "Number",
-			r'[~\^\*!%&<>\|+=@:,./?-]+': "Operator",
-			r'[\[\]();]+': "Punctuation",
-			r'"(\\\\|\\"|[^"])*"': "String.Double",
-			r"'(\\\\|\\'|[^'])*'": "String.Single",
-			r'[a-zA-Z][a-zA-Z0-9]+': "Name"
-		}
+		[
+			[r'\s+', "Text"],
+			[r'}', "Punctuation", "#pop"],
+			[r'url\(.*?\)', "String.Other"],
+			[r'^@.*?$', "Comment.Preproc"],
+			["content.keyword", "Keyword"],
+			["content.builtin", "Name.Builtin"],
+			[r'\!important', "Comment.Preproc"],
+			[r'/\*(?:.|\n)*?\*/', "Comment"],
+			[r'\#[a-zA-Z0-9]{1,6}', "Number"],
+			[r'[\.-]?[0-9]*[\.]?[0-9]+(em|px|\%|pt|pc|in|mm|cm|ex)', "Number"],
+			[r'-?[0-9]+', "Number"],
+			[r'[~\^\*!%&<>\|+=@:,./?-]+', "Operator"],
+			[r'[\[\]();]+', "Punctuation"],
+			[r'"(\\\\|\\"|[^"])*"', "String.Double"],
+			[r"'(\\\\|\\'|[^'])*'", "String.Single"],
+			[r'[a-zA-Z][a-zA-Z0-9]+', "Name"]
+		]
 	},
 	
 	"patterns":

@@ -17,8 +17,8 @@ import java.io.PrintWriter;
 import java.io.Writer;
 
 import com.threecrickets.jygments.format.Formatter;
+import com.threecrickets.jygments.grammar.Lexer;
 import com.threecrickets.jygments.grammar.Token;
-import com.threecrickets.jygments.grammar.def.Lexer;
 
 /**
  * @author Tal Liron

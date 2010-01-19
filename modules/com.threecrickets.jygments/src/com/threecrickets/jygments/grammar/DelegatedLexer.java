@@ -9,9 +9,8 @@
  * at http://threecrickets.com/
  */
 
-package com.threecrickets.jygments.grammar.def;
+package com.threecrickets.jygments.grammar;
 
-import com.threecrickets.jygments.grammar.Token;
 
 
 /**

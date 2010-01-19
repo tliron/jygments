@@ -9,7 +9,7 @@
  * at http://threecrickets.com/
  */
 
-package com.threecrickets.jygments.grammar.def;
+package com.threecrickets.jygments.grammar;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,8 +27,9 @@ import com.threecrickets.jygments.Filter;
 import com.threecrickets.jygments.Jygments;
 import com.threecrickets.jygments.ResolutionException;
 import com.threecrickets.jygments.Util;
-import com.threecrickets.jygments.grammar.Grammar;
-import com.threecrickets.jygments.grammar.Token;
+import com.threecrickets.jygments.grammar.def.ChangeStateTokenRuleDef;
+import com.threecrickets.jygments.grammar.def.IncludeDef;
+import com.threecrickets.jygments.grammar.def.TokenRuleDef;
 
 /**
  * @author Tal Liron

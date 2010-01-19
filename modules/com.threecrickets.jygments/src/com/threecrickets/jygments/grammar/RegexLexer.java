@@ -9,7 +9,7 @@
  * at http://threecrickets.com/
  */
 
-package com.threecrickets.jygments.grammar.def;
+package com.threecrickets.jygments.grammar;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,12 +19,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 
 import com.threecrickets.jygments.ResolutionException;
-import com.threecrickets.jygments.grammar.RelativeState;
-import com.threecrickets.jygments.grammar.Rule;
-import com.threecrickets.jygments.grammar.State;
-import com.threecrickets.jygments.grammar.Token;
-import com.threecrickets.jygments.grammar.TokenRule;
-import com.threecrickets.jygments.grammar.TokenType;
+import com.threecrickets.jygments.grammar.def.ChangeStateTokenRuleDef;
+import com.threecrickets.jygments.grammar.def.TokenRuleDef;
 
 /**
  * @author Tal Liron
@@ -189,86 +185,79 @@ public class RegexLexer extends Lexer
 		{
 			String stateName = entry.getKey();
 			Object stateObject = entry.getValue();
-			if( !( stateObject instanceof Map<?, ?> ) )
-				throw new ResolutionException( "State \"" + stateName + "\" must be a map" );
+			if( !( stateObject instanceof Iterable<?> ) )
+				throw new ResolutionException( "State \"" + stateName + "\" must be an array" );
 
-			for( Map.Entry<String, Object> stateEntry : ( (Map<String, Object>) stateObject ).entrySet() )
+			for( Iterable<Object> arguments : (Iterable<Iterable<Object>>) stateObject )
 			{
-				String command = stateEntry.getKey();
-				Object arguments = stateEntry.getValue();
+				List<Object> argumentsList = new ArrayList<Object>();
+				for( Object argument : (List<Object>) arguments )
+					argumentsList.add( argument );
+
+				if( argumentsList.isEmpty() )
+					throw new ResolutionException( "Entry in state \"" + stateName + "\" must have at least one argument" );
+
+				Object command = argumentsList.get( 0 );
+				if( !( command instanceof String ) )
+					throw new ResolutionException( "Entry in state \"" + stateName + "\" must have a string as the first argument" );
+
 				if( command.equals( "#include" ) )
 				{
-					if( !( arguments instanceof String ) )
+					if( argumentsList.size() != 2 )
 						throw new ResolutionException( "\"#include\" command in state \"" + stateName + "\" must have a string as an argument" );
 
-					include( stateName, (String) arguments );
+					Object includedState = argumentsList.get( 1 );
+					if( !( includedState instanceof String ) )
+						throw new ResolutionException( "\"#include\" command in state \"" + stateName + "\" must have a string as an argument" );
+
+					include( stateName, (String) includedState );
 				}
 				else
 				{
 					// Command is a pattern
-					String pattern = command;
+					String pattern = (String) command;
 
 					if( patterns.containsKey( pattern ) )
 						// Use a predefined pattern
 						pattern = patterns.get( pattern );
 
-					if( arguments instanceof List<?> )
+					if( argumentsList.size() < 2 )
+						throw new ResolutionException( "Rule in state \"" + stateName + "\" must have at least a token type as an argument" );
+
+					Object tokenTypeNames = argumentsList.get( 1 );
+					if( tokenTypeNames instanceof String )
 					{
-						List<Object> argumentsList = new ArrayList<Object>();
-						for( Object argument : (List<Object>) arguments )
-							argumentsList.add( argument );
-
-						Object tokenTypeNames = argumentsList.get( 0 );
-
-						if( argumentsList.size() == 1 )
-						{
-							if( tokenTypeNames instanceof String )
-							{
-								ArrayList<String> list = new ArrayList<String>( 1 );
-								list.add( (String) tokenTypeNames );
-								tokenTypeNames = list;
-							}
-
-							if( !( tokenTypeNames instanceof List<?> ) )
-								throw new ResolutionException( "Expected token type name or array of token type names in rule in state \"" + stateName + "\"" );
-
-							getState( stateName ).addDef( new TokenRuleDef( stateName, pattern, (List<String>) tokenTypeNames ) );
-						}
-						else if( argumentsList.size() == 2 )
-						{
-							Object nextStateNames = argumentsList.get( 1 );
-							if( nextStateNames instanceof String )
-							{
-								ArrayList<String> list = new ArrayList<String>( 1 );
-								list.add( (String) nextStateNames );
-								nextStateNames = list;
-							}
-
-							if( !( nextStateNames instanceof List<?> ) )
-								throw new ResolutionException( "Expected state name or array of state names in rule in state \"" + stateName + "\"" );
-
-							if( tokenTypeNames instanceof String )
-							{
-								ArrayList<String> list = new ArrayList<String>( 1 );
-								list.add( (String) tokenTypeNames );
-								tokenTypeNames = list;
-							}
-
-							if( !( tokenTypeNames instanceof List<?> ) )
-								throw new ResolutionException( "Expected token type name or array of token type names in rule in state \"" + stateName + "\"" );
-
-							getState( stateName ).addDef( new ChangeStateTokenRuleDef( stateName, pattern, (List<String>) tokenTypeNames, (List<String>) nextStateNames ) );
-						}
-						else
-							throw new ResolutionException( "Too many arguments for rule in state \"" + stateName + "\"" );
+						ArrayList<String> list = new ArrayList<String>( 1 );
+						list.add( (String) tokenTypeNames );
+						tokenTypeNames = list;
 					}
-					else if( arguments instanceof String )
+
+					if( !( tokenTypeNames instanceof List<?> ) )
+						throw new ResolutionException( "Expected token type name or array of token type names in rule in state \"" + stateName + "\"" );
+
+					if( argumentsList.size() == 2 )
 					{
-						// Simple token type name rule
-						rule( stateName, pattern, (String) arguments );
+						// Token rule
+						getState( stateName ).addDef( new TokenRuleDef( stateName, pattern, (List<String>) tokenTypeNames ) );
+					}
+					else if( argumentsList.size() == 3 )
+					{
+						// Change state token rule
+						Object nextStateNames = argumentsList.get( 2 );
+						if( nextStateNames instanceof String )
+						{
+							ArrayList<String> list = new ArrayList<String>( 1 );
+							list.add( (String) nextStateNames );
+							nextStateNames = list;
+						}
+
+						if( !( nextStateNames instanceof List<?> ) )
+							throw new ResolutionException( "Expected state name or array of state names in rule in state \"" + stateName + "\"" );
+
+						getState( stateName ).addDef( new ChangeStateTokenRuleDef( stateName, pattern, (List<String>) tokenTypeNames, (List<String>) nextStateNames ) );
 					}
 					else
-						throw new ResolutionException( "Unexpected argument in state \"" + stateName + "\": " + arguments );
+						throw new ResolutionException( "Too many arguments for rule in state \"" + stateName + "\"" );
 				}
 			}
 		}
