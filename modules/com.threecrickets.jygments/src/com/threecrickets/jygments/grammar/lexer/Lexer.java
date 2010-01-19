@@ -52,10 +52,12 @@ public class Lexer extends Grammar
 			return lexer;
 		else
 		{
-			String pack = Jygments.class.getPackage().getName();
+			// Try contrib package
+			String pack = Jygments.class.getPackage().getName() + ".contrib";
 			lexer = getByFullName( pack + "." + name );
 			if( lexer == null )
 			{
+				// Try this package
 				pack = Lexer.class.getPackage().getName();
 				lexer = getByFullName( pack + "." + name );
 			}

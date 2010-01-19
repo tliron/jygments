@@ -33,14 +33,21 @@ public abstract class Formatter
 		if( Character.isLowerCase( name.charAt( 0 ) ) )
 			name = Character.toUpperCase( name.charAt( 0 ) ) + name.substring( 1 ) + "Formatter";
 
-		Formatter lexer = getByFullName( name );
-		if( lexer != null )
-			return lexer;
+		Formatter formatter = getByFullName( name );
+		if( formatter != null )
+			return formatter;
 		else
 		{
-			String pack = Jygments.class.getPackage().getName();
-			name = pack + "." + name;
-			return getByFullName( name );
+			// Try contrib package
+			String pack = Jygments.class.getPackage().getName() + ".contrib";
+			formatter = getByFullName( pack + "." + name );
+			if( formatter == null )
+			{
+				// Try this package
+				pack = Formatter.class.getPackage().getName();
+				formatter = getByFullName( pack + "." + name );
+			}
+			return formatter;
 		}
 	}
 

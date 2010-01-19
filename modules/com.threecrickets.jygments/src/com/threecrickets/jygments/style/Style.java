@@ -48,7 +48,8 @@ public class Style extends NestedDef<Style>
 			return style;
 		else
 		{
-			String pack = Jygments.class.getPackage().getName();
+			// Try contrib package
+			String pack = Jygments.class.getPackage().getName() + ".contrib";
 			name = pack + "." + name;
 			return getByFullName( name );
 		}

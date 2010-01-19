@@ -61,7 +61,7 @@ public abstract class Jygments
 		code = "class Mine(object):\n    def pip(x=None):\n        pass\n        print x\n";
 		lexer = Lexer.getByName( "python" );
 		highlight( code, lexer, formatter, new PrintWriter( new FileWriter( "python.html" ) ) );
-		
+
 		highlight( code, lexer, formatter, new PrintWriter( System.out ) );
 	}
 

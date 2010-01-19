@@ -9,8 +9,9 @@
  * at http://threecrickets.com/
  */
 
-package com.threecrickets.jygments;
+package com.threecrickets.jygments.contrib;
 
+import com.threecrickets.jygments.ResolutionException;
 import com.threecrickets.jygments.style.Style;
 
 /**
