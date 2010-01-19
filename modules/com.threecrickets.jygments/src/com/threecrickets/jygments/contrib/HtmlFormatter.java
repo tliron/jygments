@@ -85,6 +85,7 @@ public class HtmlFormatter extends Formatter
 					line.append( "<span class=\"" );
 					line.append( token.getType().getShortName() );
 					line.append( "\">" );
+					//line.append( token.getType().getName());
 					line.append( Util.asHtml( token.getValue() ) );
 					line.append( "</span>" );
 				}

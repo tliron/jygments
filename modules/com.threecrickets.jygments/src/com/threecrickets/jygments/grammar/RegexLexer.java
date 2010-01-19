@@ -41,9 +41,11 @@ public class RegexLexer extends Lexer
 		stateStack.add( state );
 
 		int pos = 0;
+		int length = text.length();
 		while( pos < text.length() - 1 )
 		{
 			int eol = text.indexOf( '\n', pos );
+			int endRegion = eol >= 0 ? eol + 1 : length;
 			boolean matches = false;
 
 			// Does any rule in the current state match at the current position?
@@ -54,7 +56,7 @@ public class RegexLexer extends Lexer
 				// rule.getPattern().pattern() );
 				Matcher matcher = rule.getPattern().matcher( text );
 				// From current position to end of line
-				matcher.region( pos, eol );
+				matcher.region( pos, endRegion );
 				if( matcher.lookingAt() )
 				{
 					// System.out.println( "Match! " + matcher.group() + " " +
@@ -98,13 +100,13 @@ public class RegexLexer extends Lexer
 							stateStack.addLast( state );
 						else
 							// Pop
-							for( int depth = relativeState.getDepth(); depth > 0; depth-- )
+							for( int depth = relativeState.getDepth(); ( depth > 0 ) && !stateStack.isEmpty(); depth-- )
 								state = stateStack.removeLast();
 					}
 					else if( nextState != null )
 					{
-						// Switch
-						// stateStack.addLast( state );
+						// Push and switch
+						stateStack.addLast( state );
 						state = nextState;
 					}
 					/*
@@ -123,10 +125,14 @@ public class RegexLexer extends Lexer
 			{
 				if( pos != eol )
 				{
+					// Unmatched character
 					tokens.add( new Token( pos, TokenType.Error, text.substring( pos, pos + 1 ) ) );
 				}
 				else
 				{
+					// Fallback for states that don't explicitly match new
+					// lines.
+
 					tokens.add( new Token( pos, TokenType.Text, "\n" ) );
 
 					// Reset state stack

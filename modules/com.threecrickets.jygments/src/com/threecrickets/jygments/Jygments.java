@@ -11,6 +11,7 @@
 
 package com.threecrickets.jygments;
 
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -59,6 +60,8 @@ public abstract class Jygments
 		code = "from sys import out\ndef pip(a=nil):\n    pass";
 		code = "def pip(x):\n    print 'hi'\n";
 		code = "class Mine(object):\n    def pip(x=None):\n        pass\n        print x\n";
+		code = Util.streamToString( new FileInputStream( "/Depot/Projects/Collaborative/Prudence/libraries/pygments/lib/python/Lib/pygments/lexer.py" ) );
+		// System.out.println(code);
 		lexer = Lexer.getByName( "python" );
 		highlight( code, lexer, formatter, new PrintWriter( new FileWriter( "python.html" ) ) );
 

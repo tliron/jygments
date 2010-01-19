@@ -33,23 +33,29 @@ public class Util
 		return string.replaceAll( literalRegEx( occurence ), replacement );
 	}
 
-	public static String rejsonToJson( InputStream stream ) throws IOException
+	public static String streamToString( InputStream stream ) throws IOException
 	{
-		StringBuilder rejsonBuilder = new StringBuilder();
+		StringBuilder builder = new StringBuilder();
 		String line;
 
 		try
 		{
 			BufferedReader reader = new BufferedReader( new InputStreamReader( stream, "UTF-8" ) );
 			while( ( line = reader.readLine() ) != null )
-				rejsonBuilder.append( line ).append( "\n" );
+				builder.append( line ).append( "\n" );
 		}
 		finally
 		{
 			stream.close();
 		}
 
-		String json = rejsonToJson( rejsonBuilder.toString(), true );
+		return builder.toString();
+	}
+
+	public static String rejsonToJson( InputStream stream ) throws IOException
+	{
+		String rejson = streamToString( stream );
+		String json = rejsonToJson( rejson, true );
 		json = rejsonToJson( json, false );
 		return json;
 	}
@@ -87,7 +93,7 @@ public class Util
 			}
 		}
 		json.append( rejson.substring( end ) );
-		//System.out.println( json );
+		// System.out.println( json );
 		return json.toString();
 	}
 
@@ -98,7 +104,7 @@ public class Util
 		pattern = pattern.replaceAll( "\\}", "\\\\\\\\}" );
 		if( !doubleQuote )
 			pattern = pattern.replaceAll( "\"", "\\\\\"" );
-		//System.out.println( pattern );
+		// System.out.println( pattern );
 		return pattern;
 	}
 
