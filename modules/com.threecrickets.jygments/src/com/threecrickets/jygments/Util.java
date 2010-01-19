@@ -102,7 +102,7 @@ public class Util
 		pattern = pattern.replaceAll( "\\}", "\\\\\\\\}" );
 		if( !doubleQuote )
 			pattern = pattern.replaceAll( "\"", "\\\\\"" );
-		System.out.println( pattern );
+		//System.out.println( pattern );
 		return pattern;
 	}
 

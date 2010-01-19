@@ -9,9 +9,9 @@
  * at http://threecrickets.com/
  */
 
-package com.threecrickets.jygments.grammar.lexer;
+package com.threecrickets.jygments;
 
-import com.threecrickets.jygments.ResolutionException;
+import com.threecrickets.jygments.grammar.lexer.RegexLexer;
 
 /**
  * @author Tal Liron

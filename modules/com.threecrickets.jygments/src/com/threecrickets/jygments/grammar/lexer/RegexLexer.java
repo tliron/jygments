@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.regex.Matcher;
 
 import com.threecrickets.jygments.ResolutionException;
@@ -43,23 +42,24 @@ public class RegexLexer extends Lexer
 		List<Token> tokens = new ArrayList<Token>();
 
 		// Start at root state
-		Queue<State> stateStack = new LinkedList<State>();
+		LinkedList<State> stateStack = new LinkedList<State>();
 		State state = getState( "root" );
 		stateStack.add( state );
 
 		int pos = 0;
 		while( pos < text.length() - 1 )
 		{
+			int eol = text.indexOf( '\n', pos );
 			boolean matches = false;
 
-			// Does any rule in the current state match?
+			// Does any rule in the current state match at the current position?
 			// System.out.println("Text: " + text.substring( pos ));
 			for( Rule rule : state.getRules() )
 			{
-				// System.out.println("Trying pattern: " +
-				// rule.pattern.pattern());
+				// System.out.println( "Trying pattern: " +
+				// rule.getPattern().pattern() );
 				Matcher matcher = rule.getPattern().matcher( text );
-				int eol = text.indexOf( '\n', pos );
+				// From current position to end of line
 				matcher.region( pos, eol );
 				if( matcher.lookingAt() )
 				{
@@ -67,22 +67,10 @@ public class RegexLexer extends Lexer
 					// rule );
 
 					// Yes, so apply it!
-					State nextState = null;
+					State nextState = rule.getNextState();
 					if( rule instanceof TokenRule )
 					{
 						TokenRule tokenRule = (TokenRule) rule;
-						if( tokenRule.getNextStates() != null )
-						{
-							for( State aNextState : tokenRule.getNextStates() )
-							{
-								if( nextState == null )
-									nextState = aNextState;
-								else
-									// Combine states
-									nextState = new State( nextState, aNextState );
-							}
-						}
-
 						List<TokenType> tokenTypes = tokenRule.getTokenTypes();
 						if( tokenTypes.size() == 1 )
 							// Single token
@@ -95,23 +83,40 @@ public class RegexLexer extends Lexer
 							// Multiple tokens by group
 							int group = 1;
 							for( TokenType tokenType : tokenTypes )
-								tokens.add( new Token( pos, tokenType, matcher.group( group++ ) ) );
+							{
+								String value = matcher.group( group );
+								// System.out.println( matcher.pattern() + " " +
+								// value + " " + tokenType );
+								// pos = matcher.start( group );
+								tokens.add( new Token( pos, tokenType, value ) );
+								// pos = matcher.end( group );
+								group++;
+							}
 						}
 					}
 
 					// Change state
 					if( nextState instanceof RelativeState )
 					{
-						// Push or pop
 						RelativeState relativeState = (RelativeState) nextState;
 						if( relativeState.isPush() )
-							stateStack.add( state );
+							// Push
+							stateStack.addLast( state );
 						else
+							// Pop
 							for( int depth = relativeState.getDepth(); depth > 0; depth-- )
-								stateStack.remove();
+								state = stateStack.removeLast();
 					}
 					else if( nextState != null )
+					{
+						// Switch
+						// stateStack.addLast( state );
 						state = nextState;
+					}
+					/*
+					 * else { // Pop if( stateStack.size() > 1 ) state =
+					 * stateStack.removeLast(); }
+					 */
 
 					pos = matcher.end();
 					// System.out.println( pos );
@@ -122,18 +127,20 @@ public class RegexLexer extends Lexer
 
 			if( !matches )
 			{
-				// System.err.println(text.substring( pos ));
-				// pos = text.indexOf( '\n', pos );
-				// if( pos == -1 )
-				// pos = text.length() - 1;
-				// if( text.substring( pos ).endsWith( "\n" ) )
+				if( pos != eol )
 				{
-					// At EOL, reset state to "root"
-					stateStack.clear();
-					state = getState( "root" );
-					stateStack.add( state );
-					tokens.add( new Token( pos, TokenType.Text, "\n" ) );
+					tokens.add( new Token( pos, TokenType.Error, text.substring( pos, pos + 1 ) ) );
 				}
+				else
+				{
+					tokens.add( new Token( pos, TokenType.Text, "\n" ) );
+
+					// Reset state stack
+					state = getState( "root" );
+					stateStack.clear();
+					stateStack.addLast( state );
+				}
+
 				pos += 1;
 			}
 		}
@@ -203,9 +210,9 @@ public class RegexLexer extends Lexer
 					// Command is a pattern
 					String pattern = command;
 
-					if( pattern.startsWith( "#" ) && patterns.containsKey( pattern.substring( 1 ) ) )
+					if( patterns.containsKey( pattern ) )
 						// Use a predefined pattern
-						pattern = patterns.get( pattern.substring( 1 ) );
+						pattern = patterns.get( pattern );
 
 					if( arguments instanceof List<?> )
 					{

@@ -39,6 +39,23 @@ public abstract class Rule
 		return nextStates;
 	}
 
+	public State getNextState()
+	{
+		State nextState = null;
+		if( nextStates != null )
+		{
+			for( State aNextState : nextStates )
+			{
+				if( nextState == null )
+					nextState = aNextState;
+				else
+					// Combine states
+					nextState = new State( nextState, aNextState );
+			}
+		}
+		return nextState;
+	}
+
 	// //////////////////////////////////////////////////////////////////////////
 	// Private
 

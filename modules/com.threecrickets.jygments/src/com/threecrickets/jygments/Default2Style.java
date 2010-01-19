@@ -9,9 +9,9 @@
  * at http://threecrickets.com/
  */
 
-package com.threecrickets.jygments.style;
+package com.threecrickets.jygments;
 
-import com.threecrickets.jygments.ResolutionException;
+import com.threecrickets.jygments.style.Style;
 
 /**
  * @author Tal Liron

@@ -1,12 +1,35 @@
 /*
 * Python Lexer
 *
-* Add backslash before:
-*  Backslashes - \\
-*  Double quote mark - \"
 *
-* Add double backslash before:
-*  Left curly bracket - \\{
+* State entries are either commands (beginning with "#") or rules.
+*
+* Supported commands:
+*
+*  "#include": The value is the state to include.
+*
+* Rule entries are literal regular expressions, or references to
+* regexes defined in "patterns".
+*
+* Regex literals can use Python-style raw notation, prefixed with
+* "r". Both single-quotes and double-quoted raw notations are
+* supported.
+*
+* Rule values can be:
+*
+*  The token type to apply to the regex's match.
+*
+*  A two-value array in which the first value is the token type to
+*  apply to regex's match, or an array of token types to apply to
+*  group matches, in ordered sequence. The optional second value
+*  is the next state to switch to after the rule is applied, or an
+*  array of states to combine and switch to.
+*
+* States can be either literal names of states, or the relative
+* references "#push" and "#pop" for the state stack. "#pop" can
+* also optionally specify a depth beyond one, for example:
+* "#pop:2".
+*
 */
 
 {
@@ -25,7 +48,7 @@
 			r"^(\s*)('''(?:.|\n)*?''')": [["Text", "String.Doc"]],
 			r'[^\S\n]+': "Text",
 			r'#.*$': "Comment",
-			r'[]{}:(),;[]': "Punctuation",
+			"[\\]\\{\\}:(),;\\[]": "Punctuation",
 			r'\\\n': "Text",
 			r'\\': "Text",
 			r'(in|is|and|or|not)\b': "Operator.Word",
@@ -56,9 +79,9 @@
 
 		"builtins":
 		{
-			"#content.builtins": "Name.Builtin",
+			"content.builtins": "Name.Builtin",
 			r'(?<!\.)(self|None|Ellipsis|NotImplemented|False|True)\b': "Name.Builtin.Pseudo", 
-			"#content.exceptions": "Name.Exception"
+			"content.exceptions": "Name.Exception"
 		},
 
 		"numbers":
@@ -73,37 +96,37 @@
 
 		"backtick":
 		{
-			"`.*?`": "String.Backtick"
+			r"`.*?`": "String.Backtick"
 		},
 
 		"name":
 		{
 			r'@[a-zA-Z0-9_.]+': "Name.Decorator",
-			"[a-zA-Z_][a-zA-Z0-9_]*": "Name"
+			r"[a-zA-Z_][a-zA-Z0-9_]*": "Name"
 		},
 
 		"funcname":
 		{
-			"[a-zA-Z_][a-zA-Z0-9_]*": ["Name.Function", "#pop"]
+			r"[a-zA-Z_][a-zA-Z0-9_]*": ["Name.Function", "#pop"]
 		},
 
 		"classname":
 		{
-			"[a-zA-Z_][a-zA-Z0-9_]*": ["Name.Class", "#pop"]
+			r"[a-zA-Z_][a-zA-Z0-9_]*": ["Name.Class", "#pop"]
 		},
 
 		"import":
 		{
 			r'((?:\s|\\\s)+)(as)((?:\s|\\\s)+)': [["Text", "Keyword.Namespace", "Text"]],
-			"[a-zA-Z_][a-zA-Z0-9_.]*": "Name.Namespace",
+			r"[a-zA-Z_][a-zA-Z0-9_.]*": "Name.Namespace",
 			r'(\s*)(,)(\s*)': [["Text", "Operator", "Text"]],
-			"": ["Text", "#pop"] /* all else: go back */
+			r"": ["Text", "#pop"] /* all else: go back */
 		},
 
 		"fromimport":
 		{
 			r'((?:\s|\\\s)+)(import)\b': [["Text", "Keyword.Namespace"], "#pop"],
-			"[a-zA-Z_.][a-zA-Z0-9_.]*": "Name.Namespace"
+			r"[a-zA-Z_.][a-zA-Z0-9_.]*": "Name.Namespace"
 		},
 
 		"stringescape":
@@ -118,13 +141,13 @@
 			/* quotes, percents and backslashes must be parsed one at a time */
 			r'[\'"\\]': "String",
 			/* unhandled string formatting sign */
-			"%": "String"
+			r"%": "String"
 			/* newlines are an error (use "nl" state) */
 		},
 
 		"nl":
 		{
-			"\\n": "String"
+			r"\n": "String"
 		},
 
 		"dqs":
@@ -136,7 +159,7 @@
 
 		"sqs":
 		{
-			"'": ["String", "#pop"],
+			r"'": ["String", "#pop"],
 			r"\\\\|\\'|\\\n": "String.Escape", /* included here again for raw strings */
 			"#include": "strings"
 		},

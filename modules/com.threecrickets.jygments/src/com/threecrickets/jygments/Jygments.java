@@ -50,15 +50,19 @@ public abstract class Jygments
 
 	public static void main( String[] arguments ) throws IOException, ResolutionException
 	{
+		Formatter formatter = Formatter.getByName( "html" );
+
 		String code = " p { width: 10px; }\np { width: 10px; }\n h1 { line-height: 100%; }\n";
 		Lexer lexer = Lexer.getByName( "css" );
-		
-		code = "from sys import out\ndef pip(x):\n    pass";
-		lexer = Lexer.getByName( "python" );
-		
-		Formatter formatter = Formatter.getByName( "html" );
-		highlight( code, lexer, formatter, new PrintWriter( System.out ) );
 		highlight( code, lexer, formatter, new PrintWriter( new FileWriter( "css.html" ) ) );
+
+		code = "from sys import out\ndef pip(a=nil):\n    pass";
+		code = "def pip(x):\n    print 'hi'\n";
+		code = "class Mine(object):\n    def pip(x=None):\n        pass\n        print x\n";
+		lexer = Lexer.getByName( "python" );
+		highlight( code, lexer, formatter, new PrintWriter( new FileWriter( "python.html" ) ) );
+		
+		highlight( code, lexer, formatter, new PrintWriter( System.out ) );
 	}
 
 	// //////////////////////////////////////////////////////////////////////////

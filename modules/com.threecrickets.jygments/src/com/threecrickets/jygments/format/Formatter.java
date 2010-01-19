@@ -14,6 +14,7 @@ package com.threecrickets.jygments.format;
 import java.io.IOException;
 import java.io.Writer;
 
+import com.threecrickets.jygments.Jygments;
 import com.threecrickets.jygments.ResolutionException;
 import com.threecrickets.jygments.grammar.Token;
 import com.threecrickets.jygments.style.Style;
@@ -37,7 +38,7 @@ public abstract class Formatter
 			return lexer;
 		else
 		{
-			String pack = Formatter.class.getPackage().getName();
+			String pack = Jygments.class.getPackage().getName();
 			name = pack + "." + name;
 			return getByFullName( name );
 		}
@@ -47,7 +48,7 @@ public abstract class Formatter
 	{
 		try
 		{
-			return (Formatter) Formatter.class.getClassLoader().loadClass( fullName ).newInstance();
+			return (Formatter) Jygments.class.getClassLoader().loadClass( fullName ).newInstance();
 		}
 		catch( InstantiationException x )
 		{

@@ -24,6 +24,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.threecrickets.jygments.Filter;
+import com.threecrickets.jygments.Jygments;
 import com.threecrickets.jygments.ResolutionException;
 import com.threecrickets.jygments.Util;
 import com.threecrickets.jygments.grammar.Grammar;
@@ -51,9 +52,14 @@ public class Lexer extends Grammar
 			return lexer;
 		else
 		{
-			String pack = Lexer.class.getPackage().getName();
-			name = pack + "." + name;
-			return getByFullName( name );
+			String pack = Jygments.class.getPackage().getName();
+			lexer = getByFullName( pack + "." + name );
+			if( lexer == null )
+			{
+				pack = Lexer.class.getPackage().getName();
+				lexer = getByFullName( pack + "." + name );
+			}
+			return lexer;
 		}
 	}
 
@@ -62,7 +68,7 @@ public class Lexer extends Grammar
 	{
 		try
 		{
-			return (Lexer) Lexer.class.getClassLoader().loadClass( fullName ).newInstance();
+			return (Lexer) Jygments.class.getClassLoader().loadClass( fullName ).newInstance();
 		}
 		catch( InstantiationException x )
 		{
@@ -74,7 +80,7 @@ public class Lexer extends Grammar
 		{
 		}
 
-		InputStream stream = Lexer.class.getClassLoader().getResourceAsStream( fullName.replace( '.', '/' ) + ".json" );
+		InputStream stream = Jygments.class.getClassLoader().getResourceAsStream( fullName.replace( '.', '/' ) + ".json" );
 		if( stream != null )
 		{
 			try

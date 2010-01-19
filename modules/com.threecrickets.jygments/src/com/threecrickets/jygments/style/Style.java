@@ -23,6 +23,7 @@ import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import com.threecrickets.jygments.Jygments;
 import com.threecrickets.jygments.NestedDef;
 import com.threecrickets.jygments.ResolutionException;
 import com.threecrickets.jygments.grammar.TokenType;
@@ -47,7 +48,7 @@ public class Style extends NestedDef<Style>
 			return style;
 		else
 		{
-			String pack = Style.class.getPackage().getName();
+			String pack = Jygments.class.getPackage().getName();
 			name = pack + "." + name;
 			return getByFullName( name );
 		}
@@ -58,7 +59,7 @@ public class Style extends NestedDef<Style>
 	{
 		try
 		{
-			return (Style) Style.class.getClassLoader().loadClass( fullName ).newInstance();
+			return (Style) Jygments.class.getClassLoader().loadClass( fullName ).newInstance();
 		}
 		catch( InstantiationException x )
 		{
@@ -70,7 +71,7 @@ public class Style extends NestedDef<Style>
 		{
 		}
 
-		InputStream stream = Style.class.getClassLoader().getResourceAsStream( fullName.replace( '.', '/' ) + ".json" );
+		InputStream stream = Jygments.class.getClassLoader().getResourceAsStream( fullName.replace( '.', '/' ) + ".json" );
 		if( stream != null )
 		{
 			ObjectMapper objectMapper = new ObjectMapper();

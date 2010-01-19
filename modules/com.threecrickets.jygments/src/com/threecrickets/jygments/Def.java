@@ -20,6 +20,11 @@ public abstract class Def<C>
 	// Attributes
 	//
 
+	public boolean isResolved()
+	{
+		return resolved;
+	}
+
 	public Def<C> getCause( C container )
 	{
 		return null;
@@ -32,11 +37,6 @@ public abstract class Def<C>
 	public boolean resolve( C container ) throws ResolutionException
 	{
 		return false;
-	}
-
-	public boolean isResolved()
-	{
-		return resolved;
 	}
 
 	//
