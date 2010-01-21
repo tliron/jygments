@@ -131,13 +131,68 @@ public class Style extends NestedDef<Style>
 		resolve( this );
 	}
 
+	//
+	// Def
+	//
+
+	@Override
+	public boolean resolve( Style style ) throws ResolutionException
+	{
+		if( super.resolve( style ) )
+		{
+			boolean done = false;
+			while( !done )
+			{
+				done = true;
+				for( TokenType tokenType : TokenType.getTokenTypes() )
+				{
+					if( tokenType != TokenType.Token )
+					{
+						if( !styleElements.containsKey( tokenType ) )
+						{
+							boolean doneOne = false;
+							TokenType parent = tokenType.getParent();
+							while( parent != null )
+							{
+								if( parent == TokenType.Token )
+								{
+									doneOne = true;
+									break;
+								}
+
+								List<StyleElement> parentElements = styleElements.get( parent );
+								if( parentElements != null )
+								{
+									styleElements.put( tokenType, parentElements );
+									doneOne = true;
+									break;
+								}
+
+								parent = parent.getParent();
+							}
+
+							if( !doneOne )
+								done = false;
+						}
+					}
+				}
+			}
+
+			return true;
+		}
+		else
+			return false;
+	}
+
 	// //////////////////////////////////////////////////////////////////////////
 	// Protected
 
 	protected void add( String tokenTypeName, String... styleElementNames )
 	{
+		ArrayList<String> list = new ArrayList<String>( styleElementNames.length );
 		for( String styleElementName : styleElementNames )
-			addDef( new StyleElementDef( tokenTypeName, styleElementName ) );
+			list.add( styleElementName );
+		addDef( new StyleElementDef( tokenTypeName, list ) );
 	}
 
 	@SuppressWarnings("unchecked")

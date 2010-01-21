@@ -11,6 +11,8 @@
 
 package com.threecrickets.jygments.style.def;
 
+import java.util.List;
+
 import com.threecrickets.jygments.Def;
 import com.threecrickets.jygments.ResolutionException;
 import com.threecrickets.jygments.grammar.TokenType;
@@ -26,10 +28,10 @@ public class StyleElementDef extends Def<Style>
 	// Construction
 	//
 
-	public StyleElementDef( String tokenTypeName, String styleElementName )
+	public StyleElementDef( String tokenTypeName, List<String> styleElementNames )
 	{
 		this.tokenTypeName = tokenTypeName;
-		this.styleElementName = styleElementName;
+		this.styleElementNames = styleElementNames;
 	}
 
 	//
@@ -43,11 +45,20 @@ public class StyleElementDef extends Def<Style>
 		if( tokenType == null )
 			throw new ResolutionException( "Unknown token type: " + tokenTypeName );
 
-		StyleElement styleElement = StyleElement.getStyleElementByName( styleElementName );
-		if( styleElement == null )
-			throw new ResolutionException( "Unknown style element: " + styleElementName );
+		//TokenType parent = tokenType.getParent();
+		//boolean addToParent = false;
+		//if( ( parent != null ) && ( !style.getStyleElements().containsKey( parent ) ) )
+			//addToParent = true;
+		for( String styleElementName : styleElementNames )
+		{
+			StyleElement styleElement = StyleElement.getStyleElementByName( styleElementName );
+			if( styleElement == null )
+				throw new ResolutionException( "Unknown style element: " + styleElementName );
 
-		style.addStyleElement( tokenType, styleElement );
+			style.addStyleElement( tokenType, styleElement );
+			//if( addToParent )
+				//style.addStyleElement( parent, styleElement );
+		}
 
 		resolved = true;
 		return true;
@@ -58,5 +69,5 @@ public class StyleElementDef extends Def<Style>
 
 	private final String tokenTypeName;
 
-	private final String styleElementName;
+	private final List<String> styleElementNames;
 }

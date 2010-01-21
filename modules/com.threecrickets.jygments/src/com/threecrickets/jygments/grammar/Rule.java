@@ -17,8 +17,17 @@ import java.util.regex.Pattern;
 /**
  * @author Tal Liron
  */
-public abstract class Rule
+public class Rule
 {
+	//
+	// Construction
+	//
+
+	public Rule()
+	{
+		this( null, null );
+	}
+
 	public Rule( Pattern pattern, List<State> nextStates )
 	{
 		this.pattern = pattern;
@@ -37,23 +46,6 @@ public abstract class Rule
 	public List<State> getNextStates()
 	{
 		return nextStates;
-	}
-
-	public State getNextState()
-	{
-		State nextState = null;
-		if( nextStates != null )
-		{
-			for( State aNextState : nextStates )
-			{
-				if( nextState == null )
-					nextState = aNextState;
-				else
-					// Combine states
-					nextState = new State( nextState, aNextState );
-			}
-		}
-		return nextState;
 	}
 
 	// //////////////////////////////////////////////////////////////////////////

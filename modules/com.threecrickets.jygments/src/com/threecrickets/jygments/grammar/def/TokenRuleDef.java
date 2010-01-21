@@ -19,6 +19,7 @@ import java.util.regex.PatternSyntaxException;
 import com.threecrickets.jygments.Def;
 import com.threecrickets.jygments.ResolutionException;
 import com.threecrickets.jygments.grammar.Grammar;
+import com.threecrickets.jygments.grammar.Rule;
 import com.threecrickets.jygments.grammar.State;
 import com.threecrickets.jygments.grammar.TokenRule;
 import com.threecrickets.jygments.grammar.TokenType;
@@ -28,6 +29,10 @@ import com.threecrickets.jygments.grammar.TokenType;
  */
 public class TokenRuleDef extends Def<Grammar>
 {
+	//
+	// Construction
+	//
+
 	public TokenRuleDef( String stateName, String pattern, List<String> tokenTypeNames )
 	{
 		this.stateName = stateName;
@@ -92,7 +97,15 @@ public class TokenRuleDef extends Def<Grammar>
 
 		TokenRule rule = createTokenRule( pattern, tokenTypes, grammar );
 		State state = grammar.getState( stateName );
-		state.addRule( rule );
+		if( placeHolder != null )
+		{
+			int location = state.getRules().indexOf( placeHolder );
+			state.getRules().remove( placeHolder );
+			state.addRuleAt( location, rule );
+		}
+		else
+			state.addRule( rule );
+
 		resolved = true;
 		return true;
 	}
@@ -110,6 +123,10 @@ public class TokenRuleDef extends Def<Grammar>
 	// //////////////////////////////////////////////////////////////////////////
 	// Protected
 
+	protected final String stateName;
+
+	protected Rule placeHolder = null;
+
 	protected TokenRule createTokenRule( Pattern pattern, List<TokenType> tokenTypes, Grammar grammar ) throws ResolutionException
 	{
 		return new TokenRule( pattern, tokenTypes );
@@ -117,8 +134,6 @@ public class TokenRuleDef extends Def<Grammar>
 
 	// //////////////////////////////////////////////////////////////////////////
 	// Private
-
-	private final String stateName;
 
 	private final String pattern;
 

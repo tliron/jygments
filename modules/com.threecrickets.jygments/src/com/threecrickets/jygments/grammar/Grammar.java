@@ -34,7 +34,7 @@ public class Grammar extends NestedDef<Grammar>
 		State state = statesByName.get( stateName );
 		if( state == null )
 		{
-			state = new State();
+			state = new State( stateName );
 			statesByName.put( stateName, state );
 			addDef( state );
 		}
@@ -78,14 +78,42 @@ public class Grammar extends NestedDef<Grammar>
 			return new RelativeState( true, depth );
 		}
 
-		return getState( stateName );
+		State state = getState( stateName );
+		if( state.isResolved() )
+			return state;
+		else
+			return null;
 	}
 
 	public List<State> resolveStates( List<String> stateNames ) throws ResolutionException
 	{
 		ArrayList<State> states = new ArrayList<State>();
+		State state, stateToAdd = null;
 		for( String stateName : stateNames )
-			states.add( resolveState( stateName ) );
+		{
+			state = resolveState( stateName );
+			if( state == null )
+				return null;
+
+			if( state instanceof RelativeState )
+			{
+				if( stateToAdd != null )
+				{
+					states.add( stateToAdd );
+					stateToAdd = null;
+				}
+				states.add( state );
+			}
+			else
+			{
+				if( stateToAdd == null )
+					stateToAdd = state;
+				else
+					stateToAdd = new State( stateToAdd, state );
+			}
+		}
+		if( stateToAdd != null )
+			states.add( stateToAdd );
 		return states;
 	}
 

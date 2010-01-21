@@ -19,6 +19,10 @@ import java.util.regex.Pattern;
  */
 public class TokenRule extends Rule
 {
+	//
+	// Construction
+	//
+
 	public TokenRule( Pattern pattern, List<TokenType> tokenTypes )
 	{
 		this( pattern, tokenTypes, (List<State>) null );

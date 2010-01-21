@@ -14,6 +14,7 @@ package com.threecrickets.jygments.grammar.def;
 import com.threecrickets.jygments.Def;
 import com.threecrickets.jygments.ResolutionException;
 import com.threecrickets.jygments.grammar.Grammar;
+import com.threecrickets.jygments.grammar.Rule;
 import com.threecrickets.jygments.grammar.State;
 
 /**
@@ -34,15 +35,29 @@ public class IncludeDef extends Def<Grammar>
 	@Override
 	public boolean resolve( Grammar grammar ) throws ResolutionException
 	{
+		State state = grammar.getState( stateName );
 		State includedState = grammar.getState( includedStateName );
 
 		// Only include a resolved state
 		if( includedState.isResolved() )
 		{
-			State state = grammar.getState( stateName );
-			state.include( includedState );
+			if( placeHolder != null )
+			{
+				int location = state.getRules().indexOf( placeHolder );
+				state.getRules().remove( placeHolder );
+				state.includeAt( location, includedState );
+			}
+			else
+				state.include( includedState );
+
 			resolved = true;
 			return true;
+		}
+		else if( placeHolder == null )
+		{
+			// Remember location
+			placeHolder = new Rule();
+			state.addRule( placeHolder );
 		}
 
 		return false;
@@ -70,4 +85,6 @@ public class IncludeDef extends Def<Grammar>
 	private final String stateName;
 
 	private final String includedStateName;
+
+	private Rule placeHolder = null;
 }

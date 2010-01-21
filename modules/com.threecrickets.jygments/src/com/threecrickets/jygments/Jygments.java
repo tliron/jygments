@@ -70,6 +70,10 @@ public abstract class Jygments
 		lexer = Lexer.getByName( "clojure" );
 		highlight( code, lexer, formatter, new PrintWriter( new FileWriter( "clojure.html" ) ) );
 
+		code = Util.streamToString( new FileInputStream( "/Depot/Projects/Collaborative/Prudence/javascript/defaults/instance/default.js" ) );
+		lexer = Lexer.getByName( "javascript" );
+		highlight( code, lexer, formatter, new PrintWriter( new FileWriter( "javascript.html" ) ) );
+
 		highlight( code, lexer, formatter, new PrintWriter( System.out ) );
 	}
 

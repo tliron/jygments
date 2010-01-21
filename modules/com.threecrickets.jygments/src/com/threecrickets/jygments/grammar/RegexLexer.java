@@ -45,7 +45,9 @@ public class RegexLexer extends Lexer
 		while( pos < text.length() - 1 )
 		{
 			int eol = text.indexOf( '\n', pos );
-			int endRegion = eol >= 0 ? eol + 1 : length;
+			int endRegion = eol >= 0 ? eol + 2 : length;
+			if( endRegion > length )
+				endRegion = length;
 			boolean matches = false;
 
 			// Does any rule in the current state match at the current position?
@@ -63,7 +65,6 @@ public class RegexLexer extends Lexer
 					// rule );
 
 					// Yes, so apply it!
-					State nextState = rule.getNextState();
 					if( rule instanceof TokenRule )
 					{
 						TokenRule tokenRule = (TokenRule) rule;
@@ -92,22 +93,29 @@ public class RegexLexer extends Lexer
 					}
 
 					// Change state
-					if( nextState instanceof RelativeState )
+					List<State> nextStates = rule.getNextStates();
+					if( nextStates != null )
 					{
-						RelativeState relativeState = (RelativeState) nextState;
-						if( relativeState.isPush() )
-							// Push
-							stateStack.addLast( state );
-						else
-							// Pop
-							for( int depth = relativeState.getDepth(); ( depth > 0 ) && !stateStack.isEmpty(); depth-- )
-								state = stateStack.removeLast();
-					}
-					else if( nextState != null )
-					{
-						// Push and switch
-						stateStack.addLast( state );
-						state = nextState;
+						for( State nextState : nextStates )
+						{
+							if( nextState instanceof RelativeState )
+							{
+								RelativeState relativeState = (RelativeState) nextState;
+								if( relativeState.isPush() )
+									// Push
+									stateStack.addLast( state );
+								else
+									// Pop
+									for( int depth = relativeState.getDepth(); ( depth > 0 ) && !stateStack.isEmpty(); depth-- )
+										state = stateStack.removeLast();
+							}
+							else
+							{
+								// Push and switch
+								stateStack.addLast( state );
+								state = nextState;
+							}
+						}
 					}
 					/*
 					 * else { // Pop if( stateStack.size() > 1 ) state =
@@ -123,6 +131,7 @@ public class RegexLexer extends Lexer
 
 			if( !matches )
 			{
+				//tokens.add( new Token( pos, TokenType.Error, state.getName() ) );
 				if( pos != eol )
 				{
 					// Unmatched character
@@ -136,9 +145,10 @@ public class RegexLexer extends Lexer
 					tokens.add( new Token( pos, TokenType.Text, "\n" ) );
 
 					// Reset state stack
-					state = getState( "root" );
-					stateStack.clear();
-					stateStack.addLast( state );
+					/*
+					 * state = getState( "root" ); stateStack.clear();
+					 * stateStack.addLast( state );
+					 */
 				}
 
 				pos += 1;
