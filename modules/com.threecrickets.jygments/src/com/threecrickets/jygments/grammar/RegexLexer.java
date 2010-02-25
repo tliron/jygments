@@ -21,6 +21,7 @@ import java.util.regex.Matcher;
 import com.threecrickets.jygments.ResolutionException;
 import com.threecrickets.jygments.grammar.def.ChangeStateTokenRuleDef;
 import com.threecrickets.jygments.grammar.def.TokenRuleDef;
+import com.threecrickets.jygments.grammar.def.UsingRuleDef;
 
 /**
  * @author Tal Liron
@@ -91,6 +92,13 @@ public class RegexLexer extends Lexer
 							}
 						}
 					}
+					else if( rule instanceof UsingRule )
+					{
+						UsingRule usingRule = (UsingRule) rule;
+						Iterable<Token> usingTokens = usingRule.getLexer().getTokensUnprocessed( matcher.group() );
+						for( Token usingToken : usingTokens )
+							tokens.add( usingToken );
+					}
 
 					// Change state
 					List<State> nextStates = rule.getNextStates();
@@ -131,7 +139,8 @@ public class RegexLexer extends Lexer
 
 			if( !matches )
 			{
-				//tokens.add( new Token( pos, TokenType.Error, state.getName() ) );
+				// tokens.add( new Token( pos, TokenType.Error, state.getName()
+				// ) );
 				if( pos != eol )
 				{
 					// Unmatched character
@@ -229,6 +238,21 @@ public class RegexLexer extends Lexer
 						throw new ResolutionException( "\"#include\" command in state \"" + stateName + "\" must have a string as an argument" );
 
 					include( stateName, (String) includedState );
+				}
+				else if( command.equals( "#using" ) )
+				{
+					if( argumentsList.size() != 3 )
+						throw new ResolutionException( "\"#using\" command in state \"" + stateName + "\" must have two strings as arguments" );
+
+					Object pattern = argumentsList.get( 1 );
+					if( !( pattern instanceof String ) )
+						throw new ResolutionException( "\"#using\" command in state \"" + stateName + "\" must have two strings as arguments" );
+
+					Object usingLexerName = argumentsList.get( 2 );
+					if( !( usingLexerName instanceof String ) )
+						throw new ResolutionException( "\"#using\" command in state \"" + stateName + "\" must have two strings as arguments" );
+
+					getState( stateName ).addDef( new UsingRuleDef( stateName, (String) pattern, (String) usingLexerName ) );
 				}
 				else
 				{

@@ -20,11 +20,11 @@ import com.threecrickets.jygments.grammar.State;
 /**
  * @author Tal Liron
  */
-public class IncludeDef extends Def<Grammar>
+public class IncludeDef extends StateDef
 {
 	public IncludeDef( String stateName, String includedStateName )
 	{
-		this.stateName = stateName;
+		super( stateName );
 		this.includedStateName = includedStateName;
 	}
 
@@ -82,9 +82,5 @@ public class IncludeDef extends Def<Grammar>
 	// //////////////////////////////////////////////////////////////////////////
 	// Private
 
-	private final String stateName;
-
 	private final String includedStateName;
-
-	private Rule placeHolder = null;
 }

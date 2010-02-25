@@ -16,10 +16,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import com.threecrickets.jygments.Def;
 import com.threecrickets.jygments.ResolutionException;
 import com.threecrickets.jygments.grammar.Grammar;
-import com.threecrickets.jygments.grammar.Rule;
 import com.threecrickets.jygments.grammar.State;
 import com.threecrickets.jygments.grammar.TokenRule;
 import com.threecrickets.jygments.grammar.TokenType;
@@ -27,7 +25,7 @@ import com.threecrickets.jygments.grammar.TokenType;
 /**
  * @author Tal Liron
  */
-public class TokenRuleDef extends Def<Grammar>
+public class TokenRuleDef extends StateDef
 {
 	//
 	// Construction
@@ -35,14 +33,14 @@ public class TokenRuleDef extends Def<Grammar>
 
 	public TokenRuleDef( String stateName, String pattern, List<String> tokenTypeNames )
 	{
-		this.stateName = stateName;
+		super( stateName );
 		this.pattern = pattern;
 		this.tokenTypeNames = tokenTypeNames;
 	}
 
 	public TokenRuleDef( String stateName, String pattern, String... tokenTypeNames )
 	{
-		this.stateName = stateName;
+		super( stateName );
 		this.pattern = pattern;
 		ArrayList<String> list = new ArrayList<String>( tokenTypeNames.length );
 		for( String tokenTypeName : tokenTypeNames )
@@ -53,11 +51,6 @@ public class TokenRuleDef extends Def<Grammar>
 	//
 	// Attributes
 	//
-
-	public String getStateName()
-	{
-		return stateName;
-	}
 
 	public String getPattern()
 	{
@@ -117,15 +110,11 @@ public class TokenRuleDef extends Def<Grammar>
 	@Override
 	public String toString()
 	{
-		return super.toString() + " " + stateName + ", " + pattern + ", " + tokenTypeNames;
+		return super.toString() + ", " + pattern + ", " + tokenTypeNames;
 	}
 
 	// //////////////////////////////////////////////////////////////////////////
 	// Protected
-
-	protected final String stateName;
-
-	protected Rule placeHolder = null;
 
 	protected TokenRule createTokenRule( Pattern pattern, List<TokenType> tokenTypes, Grammar grammar ) throws ResolutionException
 	{

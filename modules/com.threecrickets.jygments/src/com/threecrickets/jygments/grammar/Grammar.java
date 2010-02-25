@@ -77,6 +77,15 @@ public class Grammar extends NestedDef<Grammar>
 			}
 			return new RelativeState( true, depth );
 		}
+		else if( stateName.startsWith( "#using" ) )
+		{
+			if( stateName.length() <= 6 )
+				throw new ResolutionException( "#using does not include lexer name" );
+
+			String lexerName = stateName.substring( 7 );
+			Lexer lexer = Lexer.getByName( lexerName );
+			return lexer.getState( "root" );
+		}
 
 		State state = getState( stateName );
 		if( state.isResolved() )

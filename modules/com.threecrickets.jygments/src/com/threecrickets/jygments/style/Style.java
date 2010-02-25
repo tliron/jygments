@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
@@ -58,6 +60,11 @@ public class Style extends NestedDef<Style>
 	@SuppressWarnings("unchecked")
 	public static Style getByFullName( String fullName ) throws ResolutionException
 	{
+		// Try cache
+		Style style = styles.get( fullName );
+		if( style != null )
+			return style;
+
 		try
 		{
 			return (Style) Jygments.class.getClassLoader().loadClass( fullName ).newInstance();
@@ -80,9 +87,15 @@ public class Style extends NestedDef<Style>
 			try
 			{
 				Map<String, Object> json = objectMapper.readValue( stream, HashMap.class );
-				Style style = new Style();
+				style = new Style();
 				style.addJson( json );
 				style.resolve();
+
+				// Cache it
+				Style existing = styles.putIfAbsent( fullName, style );
+				if( existing != null )
+					style = existing;
+
 				return style;
 			}
 			catch( JsonParseException x )
@@ -215,6 +228,8 @@ public class Style extends NestedDef<Style>
 
 	// //////////////////////////////////////////////////////////////////////////
 	// Private
+
+	private static final ConcurrentMap<String, Style> styles = new ConcurrentHashMap<String, Style>();
 
 	private final Map<TokenType, List<StyleElement>> styleElements = new HashMap<TokenType, List<StyleElement>>();
 }

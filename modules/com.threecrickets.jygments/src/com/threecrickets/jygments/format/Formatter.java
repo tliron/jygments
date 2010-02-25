@@ -94,6 +94,9 @@ public abstract class Formatter
 
 	public abstract void format( Iterable<Token> tokenSource, Writer writer ) throws IOException;
 
+	// //////////////////////////////////////////////////////////////////////////
+	// Private
+
 	private final Style style;
 
 	private final String title;

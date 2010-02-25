@@ -55,7 +55,8 @@ public abstract class Jygments
 
 		String code = " p { width: 10px; }\np { width: 10px; }\n h1 { line-height: 100%; }\n";
 		Lexer lexer = Lexer.getByName( "css" );
-		code = Util.streamToString( new FileInputStream( "/Depot/Projects/Collaborative/Prudence/common/applications/prudence-test/web/static/style/soft-cricket.css" ) );
+		
+		/*code = Util.streamToString( new FileInputStream( "/Depot/Projects/Collaborative/Prudence/common/applications/prudence-test/web/static/style/soft-cricket.css" ) );
 		highlight( code, lexer, formatter, new PrintWriter( new FileWriter( "css.html" ) ) );
 
 		code = "from sys import out\ndef pip(a=nil):\n    pass";
@@ -72,7 +73,11 @@ public abstract class Jygments
 
 		code = Util.streamToString( new FileInputStream( "/Depot/Projects/Collaborative/Prudence/javascript/defaults/instance/default.js" ) );
 		lexer = Lexer.getByName( "javascript" );
-		highlight( code, lexer, formatter, new PrintWriter( new FileWriter( "javascript.html" ) ) );
+		highlight( code, lexer, formatter, new PrintWriter( new FileWriter( "javascript.html" ) ) );*/
+
+		code = Util.streamToString( new FileInputStream( "/Depot/Projects/Collaborative/Prudence/python/applications/stickstick/web/static/index.html" ) );
+		lexer = Lexer.getByName( "html" );
+		highlight( code, lexer, formatter, new PrintWriter( new FileWriter( "html.html" ) ) );
 
 		highlight( code, lexer, formatter, new PrintWriter( System.out ) );
 	}

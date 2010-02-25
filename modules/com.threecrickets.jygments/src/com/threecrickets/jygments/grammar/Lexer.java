@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
@@ -66,6 +68,11 @@ public class Lexer extends Grammar
 	@SuppressWarnings("unchecked")
 	public static Lexer getByFullName( String fullName ) throws ResolutionException
 	{
+		// Try cache
+		Lexer lexer = lexers.get( fullName );
+		if( lexer != null )
+			return lexer;
+
 		try
 		{
 			return (Lexer) Jygments.class.getClassLoader().loadClass( fullName ).newInstance();
@@ -93,9 +100,18 @@ public class Lexer extends Grammar
 				if( className == null )
 					className = "";
 
-				Lexer lexer = getByName( className.toString() );
+				lexer = getByName( className.toString() );
 				lexer.addJson( json );
 				lexer.resolve();
+
+				if( lexer != null )
+				{
+					// Cache it
+					Lexer existing = lexers.putIfAbsent( fullName, lexer );
+					if( existing != null )
+						lexer = existing;
+				}
+
 				return lexer;
 			}
 			catch( JsonParseException x )
@@ -273,6 +289,8 @@ public class Lexer extends Grammar
 
 	// //////////////////////////////////////////////////////////////////////////
 	// Private
+
+	private static final ConcurrentMap<String, Lexer> lexers = new ConcurrentHashMap<String, Lexer>();
 
 	private final List<Filter> filters = new ArrayList<Filter>();
 
