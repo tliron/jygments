@@ -43,12 +43,13 @@ public class RegexLexer extends Lexer
 
 		int pos = 0;
 		int length = text.length();
-		while( pos < text.length() - 1 )
+		while( pos < length - 1 )
 		{
 			int eol = text.indexOf( '\n', pos );
-			int endRegion = eol >= 0 ? eol + 2 : length;
-			if( endRegion > length )
-				endRegion = length;
+			// int endRegion = eol >= 0 ? eol + 2 : length;
+			// if( endRegion > length )
+			// endRegion = length;
+			int endRegion = length;
 			boolean matches = false;
 
 			// Does any rule in the current state match at the current position?
@@ -59,6 +60,7 @@ public class RegexLexer extends Lexer
 				// rule.getPattern().pattern() );
 				Matcher matcher = rule.getPattern().matcher( text );
 				// From current position to end of line
+				//matcher.useTransparentBounds( true );
 				matcher.region( pos, endRegion );
 				if( matcher.lookingAt() )
 				{
@@ -95,6 +97,8 @@ public class RegexLexer extends Lexer
 					else if( rule instanceof UsingRule )
 					{
 						UsingRule usingRule = (UsingRule) rule;
+						//System.err.println( "!!!!!!!" + rule.getPattern().pattern() );
+						//System.err.println( "!!!!!!!!!!!!!!" + matcher.group().length() );
 						Iterable<Token> usingTokens = usingRule.getLexer().getTokensUnprocessed( matcher.group() );
 						for( Token usingToken : usingTokens )
 							tokens.add( usingToken );

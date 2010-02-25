@@ -60,7 +60,7 @@ public class UsingRuleDef extends StateDef
 		Pattern pattern;
 		try
 		{
-			pattern = Pattern.compile( this.pattern, Pattern.MULTILINE );
+			pattern = Pattern.compile( this.pattern, Pattern.MULTILINE | Pattern.DOTALL );
 		}
 		catch( PatternSyntaxException x )
 		{

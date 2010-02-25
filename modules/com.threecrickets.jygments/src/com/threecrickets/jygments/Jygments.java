@@ -79,7 +79,7 @@ public abstract class Jygments
 		lexer = Lexer.getByName( "html" );
 		highlight( code, lexer, formatter, new PrintWriter( new FileWriter( "html.html" ) ) );
 
-		highlight( code, lexer, formatter, new PrintWriter( System.out ) );
+		//highlight( code, lexer, formatter, new PrintWriter( System.out ) );
 	}
 
 	// //////////////////////////////////////////////////////////////////////////

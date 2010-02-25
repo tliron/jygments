@@ -97,32 +97,37 @@ public class Grammar extends NestedDef<Grammar>
 	public List<State> resolveStates( List<String> stateNames ) throws ResolutionException
 	{
 		ArrayList<State> states = new ArrayList<State>();
-		State state, stateToAdd = null;
 		for( String stateName : stateNames )
 		{
-			state = resolveState( stateName );
-			if( state == null )
-				return null;
-
-			if( state instanceof RelativeState )
+			String[] combinedStateName = stateName.split( "\\+" );
+			if( combinedStateName.length > 1 )
 			{
-				if( stateToAdd != null )
+				State combinedState = null;
+
+				for( String singleStateName : combinedStateName )
 				{
-					states.add( stateToAdd );
-					stateToAdd = null;
+					State state = resolveState( singleStateName );
+					if( state == null )
+						return null;
+
+					if( combinedState == null )
+						combinedState = state;
+					else
+						combinedState = new State( combinedState, state );
 				}
-				states.add( state );
+
+				states.add( combinedState );
 			}
 			else
 			{
-				if( stateToAdd == null )
-					stateToAdd = state;
-				else
-					stateToAdd = new State( stateToAdd, state );
+				State state = resolveState( stateName );
+				if( state == null )
+					return null;
+
+				states.add( state );
 			}
 		}
-		if( stateToAdd != null )
-			states.add( stateToAdd );
+
 		return states;
 	}
 
