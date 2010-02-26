@@ -11,47 +11,10 @@
 
 package com.threecrickets.jygments.grammar;
 
-import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * @author Tal Liron
  */
 public class Rule
 {
-	//
-	// Construction
-	//
-
-	public Rule()
-	{
-		this( null, null );
-	}
-
-	public Rule( Pattern pattern, List<State> nextStates )
-	{
-		this.pattern = pattern;
-		this.nextStates = nextStates;
-	}
-
-	//
-	// Attributes
-	//
-
-	public Pattern getPattern()
-	{
-		return pattern;
-	}
-
-	public List<State> getNextStates()
-	{
-		return nextStates;
-	}
-
-	// //////////////////////////////////////////////////////////////////////////
-	// Private
-
-	private final Pattern pattern;
-
-	private final List<State> nextStates;
 }

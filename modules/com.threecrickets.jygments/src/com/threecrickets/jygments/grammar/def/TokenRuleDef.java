@@ -31,17 +31,19 @@ public class TokenRuleDef extends StateDef
 	// Construction
 	//
 
-	public TokenRuleDef( String stateName, String pattern, List<String> tokenTypeNames )
+	public TokenRuleDef( String stateName, String pattern, int flags, List<String> tokenTypeNames )
 	{
 		super( stateName );
 		this.pattern = pattern;
+		this.flags = flags;
 		this.tokenTypeNames = tokenTypeNames;
 	}
 
-	public TokenRuleDef( String stateName, String pattern, String... tokenTypeNames )
+	public TokenRuleDef( String stateName, String pattern, int flags, String... tokenTypeNames )
 	{
 		super( stateName );
 		this.pattern = pattern;
+		this.flags = flags;
 		ArrayList<String> list = new ArrayList<String>( tokenTypeNames.length );
 		for( String tokenTypeName : tokenTypeNames )
 			list.add( tokenTypeName );
@@ -72,7 +74,8 @@ public class TokenRuleDef extends StateDef
 		Pattern pattern;
 		try
 		{
-			pattern = Pattern.compile( this.pattern, Pattern.MULTILINE | Pattern.DOTALL );
+			//pattern = Pattern.compile( this.pattern, Pattern.MULTILINE | Pattern.DOTALL );
+			pattern = Pattern.compile( this.pattern, flags );
 		}
 		catch( PatternSyntaxException x )
 		{
@@ -125,6 +128,8 @@ public class TokenRuleDef extends StateDef
 	// Private
 
 	private final String pattern;
+
+	private final int flags;
 
 	private final List<String> tokenTypeNames;
 }

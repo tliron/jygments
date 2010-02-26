@@ -250,37 +250,27 @@ public class Lexer extends Grammar
 		getState( stateName ).addDef( new IncludeDef( stateName, includedStateName ) );
 	}
 
-	protected void bygroups( String stateName, String pattern, Iterable<String> tokenTypeNames )
+	protected void rule( String stateName, String pattern, int flags, String tokenTypeName )
 	{
-
+		getState( stateName ).addDef( new TokenRuleDef( stateName, pattern, flags, tokenTypeName ) );
 	}
 
-	protected void bygroups( String stateName, String pattern, Iterable<String> tokenTypeNames, String nextStateName )
+	protected void rule( String stateName, String pattern, int flags, String tokenTypeName, String nextStateName )
 	{
-
-	}
-
-	protected void rule( String stateName, String pattern, String tokenTypeName )
-	{
-		getState( stateName ).addDef( new TokenRuleDef( stateName, pattern, tokenTypeName ) );
-	}
-
-	protected void rule( String stateName, String pattern, String tokenTypeName, String nextStateName )
-	{
-		getState( stateName ).addDef( new ChangeStateTokenRuleDef( stateName, pattern, new String[]
+		getState( stateName ).addDef( new ChangeStateTokenRuleDef( stateName, pattern, flags, new String[]
 		{
 			tokenTypeName
 		}, nextStateName ) );
 	}
 
-	protected void rule( String stateName, String pattern, String[] tokenTypeNames )
+	protected void rule( String stateName, String pattern, int flags, String[] tokenTypeNames )
 	{
-		getState( stateName ).addDef( new TokenRuleDef( stateName, pattern, tokenTypeNames ) );
+		getState( stateName ).addDef( new TokenRuleDef( stateName, pattern, flags, tokenTypeNames ) );
 	}
 
-	protected void rule( String stateName, String pattern, String[] tokenTypeNames, String... nextStateNames )
+	protected void rule( String stateName, String pattern, int flags, String[] tokenTypeNames, String... nextStateNames )
 	{
-		getState( stateName ).addDef( new ChangeStateTokenRuleDef( stateName, pattern, tokenTypeNames, nextStateNames ) );
+		getState( stateName ).addDef( new ChangeStateTokenRuleDef( stateName, pattern, flags, tokenTypeNames, nextStateNames ) );
 	}
 
 	protected void addJson( Map<String, Object> json ) throws ResolutionException

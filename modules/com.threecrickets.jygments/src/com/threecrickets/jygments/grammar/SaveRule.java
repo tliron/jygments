@@ -11,34 +11,32 @@
 
 package com.threecrickets.jygments.grammar;
 
-import java.util.regex.Pattern;
-
 /**
  * @author Tal Liron
  */
-public class UsingRule extends PatternRule
+public class SaveRule extends Rule
 {
 	//
 	// Construction
 	//
 
-	public UsingRule( Pattern pattern, Lexer lexer )
+	public SaveRule( State state )
 	{
-		super( pattern );
-		this.lexer = lexer;
+		super();
+		this.state = state;
 	}
 
 	//
 	// Attributes
 	//
 
-	public Lexer getLexer()
+	public State getState()
 	{
-		return lexer;
+		return state;
 	}
 
 	// //////////////////////////////////////////////////////////////////////////
 	// Private
 
-	private final Lexer lexer;
+	private final State state;
 }

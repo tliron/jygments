@@ -8,8 +8,8 @@
 	"filenames": ["*.js"],
 	"mimetypes": ["application/x-javascript", "text/x-javascript", "text/javascript"],
 
-	"flags": "re.DOTALL",
 	"class": "regex",
+	"flags": ["DOTALL"],
 
 	"states":
 	{

@@ -8,8 +8,8 @@
 	"filenames": ["*.html", "*.htm", "*.xhtml", "*.xslt"],
 	"mimetypes": ["text/html", "application/xhtml+xml"],
 
-	"flags": ["re.IGNORECASE", "re.DOTALL"],
   	"class": "regex",
+	"flags": ["IGNORECASE", "DOTALL"],
 
 	"states":
 	{	

@@ -16,29 +16,28 @@ import java.util.regex.Pattern;
 /**
  * @author Tal Liron
  */
-public class UsingRule extends PatternRule
+public abstract class PatternRule extends Rule
 {
 	//
 	// Construction
 	//
 
-	public UsingRule( Pattern pattern, Lexer lexer )
+	public PatternRule( Pattern pattern )
 	{
-		super( pattern );
-		this.lexer = lexer;
+		this.pattern = pattern;
 	}
 
 	//
 	// Attributes
 	//
 
-	public Lexer getLexer()
+	public Pattern getPattern()
 	{
-		return lexer;
+		return pattern;
 	}
 
 	// //////////////////////////////////////////////////////////////////////////
 	// Private
 
-	private final Lexer lexer;
+	private final Pattern pattern;
 }

@@ -17,9 +17,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.threecrickets.jygments.ResolutionException;
 import com.threecrickets.jygments.grammar.def.ChangeStateTokenRuleDef;
+import com.threecrickets.jygments.grammar.def.SaveDef;
 import com.threecrickets.jygments.grammar.def.TokenRuleDef;
 import com.threecrickets.jygments.grammar.def.UsingRuleDef;
 
@@ -54,90 +56,110 @@ public class RegexLexer extends Lexer
 
 			// Does any rule in the current state match at the current position?
 			// System.out.println("Text: " + text.substring( pos ));
-			for( Rule rule : state.getRules() )
+			for( Rule rule : new ArrayList<Rule>( state.getRules() ) )
 			{
-				// System.out.println( "Trying pattern: " +
-				// rule.getPattern().pattern() );
-				Matcher matcher = rule.getPattern().matcher( text );
-				// From current position to end of line
-				//matcher.useTransparentBounds( true );
-				matcher.region( pos, endRegion );
-				if( matcher.lookingAt() )
+				if( rule instanceof PatternRule )
 				{
-					// System.out.println( "Match! " + matcher.group() + " " +
-					// rule );
-
-					// Yes, so apply it!
-					if( rule instanceof TokenRule )
+					PatternRule patternRule = (PatternRule) rule;
+					// System.out.println( "Trying pattern: " +
+					// rule.getPattern().pattern() );
+					Matcher matcher = patternRule.getPattern().matcher( text );
+					// From current position to end of line
+					// matcher.useTransparentBounds( true );
+					matcher.region( pos, endRegion );
+					if( matcher.lookingAt() )
 					{
-						TokenRule tokenRule = (TokenRule) rule;
-						List<TokenType> tokenTypes = tokenRule.getTokenTypes();
-						if( tokenTypes.size() == 1 )
-							// Single token
-							tokens.add( new Token( pos, tokenTypes.get( 0 ), matcher.group() ) );
-						else
+						// System.out.println( "Match! " + matcher.group() + " "
+						// +
+						// rule );
+
+						// Yes, so apply it!
+						if( rule instanceof TokenRule )
 						{
-							if( tokenTypes.size() != matcher.groupCount() )
-								throw new RuntimeException( "The number of token types in the rule does not match the number of groups in the regular expression" );
-
-							// Multiple tokens by group
-							int group = 1;
-							for( TokenType tokenType : tokenTypes )
-							{
-								String value = matcher.group( group );
-								// System.out.println( matcher.pattern() + " " +
-								// value + " " + tokenType );
-								// pos = matcher.start( group );
-								tokens.add( new Token( pos, tokenType, value ) );
-								// pos = matcher.end( group );
-								group++;
-							}
-						}
-					}
-					else if( rule instanceof UsingRule )
-					{
-						UsingRule usingRule = (UsingRule) rule;
-						//System.err.println( "!!!!!!!" + rule.getPattern().pattern() );
-						//System.err.println( "!!!!!!!!!!!!!!" + matcher.group().length() );
-						Iterable<Token> usingTokens = usingRule.getLexer().getTokensUnprocessed( matcher.group() );
-						for( Token usingToken : usingTokens )
-							tokens.add( usingToken );
-					}
-
-					// Change state
-					List<State> nextStates = rule.getNextStates();
-					if( nextStates != null )
-					{
-						for( State nextState : nextStates )
-						{
-							if( nextState instanceof RelativeState )
-							{
-								RelativeState relativeState = (RelativeState) nextState;
-								if( relativeState.isPush() )
-									// Push
-									stateStack.addLast( state );
-								else
-									// Pop
-									for( int depth = relativeState.getDepth(); ( depth > 0 ) && !stateStack.isEmpty(); depth-- )
-										state = stateStack.removeLast();
-							}
+							TokenRule tokenRule = (TokenRule) rule;
+							List<TokenType> tokenTypes = tokenRule.getTokenTypes();
+							if( tokenTypes.size() == 1 )
+								// Single token
+								tokens.add( new Token( pos, tokenTypes.get( 0 ), matcher.group() ) );
 							else
 							{
-								// Push and switch
-								stateStack.addLast( state );
-								state = nextState;
-							}
-						}
-					}
-					/*
-					 * else { // Pop if( stateStack.size() > 1 ) state =
-					 * stateStack.removeLast(); }
-					 */
+								if( tokenTypes.size() != matcher.groupCount() )
+									throw new RuntimeException( "The number of token types in the rule does not match the number of groups in the regular expression" );
 
-					pos = matcher.end();
-					// System.out.println( pos );
-					matches = true;
-					break;
+								// Multiple tokens by group
+								int group = 1;
+								for( TokenType tokenType : tokenTypes )
+								{
+									String value = matcher.group( group );
+									// System.out.println( matcher.pattern() +
+									// " " +
+									// value + " " + tokenType );
+									// pos = matcher.start( group );
+									tokens.add( new Token( pos, tokenType, value ) );
+									// pos = matcher.end( group );
+									group++;
+								}
+							}
+
+							// Change state
+							List<State> nextStates = tokenRule.getNextStates();
+							if( nextStates != null )
+							{
+								for( State nextState : nextStates )
+								{
+									if( nextState instanceof RelativeState )
+									{
+										RelativeState relativeState = (RelativeState) nextState;
+										if( relativeState.isPush() )
+											// Push
+											stateStack.addLast( state );
+										else
+											// Pop
+											for( int depth = relativeState.getDepth(); ( depth > 0 ) && !stateStack.isEmpty(); depth-- )
+												state = stateStack.removeLast();
+									}
+									else
+									{
+										// Push and switch
+										stateStack.addLast( state );
+										state = nextState;
+									}
+								}
+							}
+							/*
+							 * else { // Pop if( stateStack.size() > 1 ) state =
+							 * stateStack.removeLast(); }
+							 */
+						}
+						else if( rule instanceof UsingRule )
+						{
+							UsingRule usingRule = (UsingRule) rule;
+							// System.err.println( "!!!!!!!" +
+							// rule.getPattern().pattern() );
+							// System.err.println( "!!!!!!!!!!!!!!" +
+							// matcher.group().length() );
+							Iterable<Token> usingTokens = usingRule.getLexer().getTokensUnprocessed( matcher.group() );
+							for( Token usingToken : usingTokens )
+								tokens.add( usingToken );
+						}
+
+						pos = matcher.end();
+						// System.out.println( pos );
+						matches = true;
+
+						// Don't process other rules here
+						break;
+					}
+				}
+				else if( rule instanceof SaveRule )
+				{
+					SaveRule saveRule = (SaveRule) rule;
+					State saveState = saveRule.getState();
+					if( saveState != state )
+					{
+						saveState.getRules().clear();
+						saveState.include( state );
+					}
 				}
 			}
 
@@ -205,6 +227,41 @@ public class RegexLexer extends Lexer
 			}
 		}
 
+		// Flags
+		int defaultFlags = Pattern.MULTILINE;
+		Object flagsObject = json.get( "flags" );
+		if( flagsObject != null )
+		{
+			if( !( flagsObject instanceof List<?> ) )
+				throw new ResolutionException( "\"flags\" must be an array of strings" );
+
+			for( Object flagObject : (List<?>) flagsObject )
+			{
+				if( !( flagObject instanceof String ) )
+					throw new ResolutionException( "\"flags\" must be an array of strings" );
+
+				String flag = (String) flagObject;
+				if( flag.equalsIgnoreCase( "CANON_EQ" ) )
+					defaultFlags |= Pattern.CANON_EQ;
+				else if( flag.equalsIgnoreCase( "CASE_INSENSITIVE" ) || flag.equalsIgnoreCase( "IGNORECASE" ) )
+					defaultFlags |= Pattern.CASE_INSENSITIVE;
+				else if( flag.equalsIgnoreCase( "COMMENTS" ) )
+					defaultFlags |= Pattern.COMMENTS;
+				else if( flag.equalsIgnoreCase( "DOTALL" ) )
+					defaultFlags |= Pattern.DOTALL;
+				else if( flag.equalsIgnoreCase( "LITERAL" ) )
+					defaultFlags |= Pattern.LITERAL;
+				else if( flag.equalsIgnoreCase( "MULTILINE" ) )
+					defaultFlags |= Pattern.MULTILINE;
+				else if( flag.equalsIgnoreCase( "UNICODE_CASE" ) )
+					defaultFlags |= Pattern.UNICODE_CASE;
+				else if( flag.equalsIgnoreCase( "UNIX_LINES" ) )
+					defaultFlags |= Pattern.UNIX_LINES;
+				else
+					throw new ResolutionException( "\"flags\" contains an unrecognized flag: " + flag );
+			}
+		}
+
 		Object statesObject = json.get( "states" );
 		if( statesObject == null )
 			throw new ResolutionException( "Grammar does not contain \"states\" map" );
@@ -258,6 +315,17 @@ public class RegexLexer extends Lexer
 
 					getState( stateName ).addDef( new UsingRuleDef( stateName, (String) pattern, (String) usingLexerName ) );
 				}
+				else if( command.equals( "#save" ) )
+				{
+					if( argumentsList.size() != 2 )
+						throw new ResolutionException( "\"#save\" command in state \"" + stateName + "\" must have one string as an argument" );
+
+					Object savedStateName = argumentsList.get( 1 );
+					if( !( savedStateName instanceof String ) )
+						throw new ResolutionException( "\"#save\" command in state \"" + stateName + "\" must have one string as an argument" );
+
+					getState( stateName ).addDef( new SaveDef( stateName, (String) savedStateName ) );
+				}
 				else
 				{
 					// Command is a pattern
@@ -296,7 +364,7 @@ public class RegexLexer extends Lexer
 					if( argumentsList.size() == 2 )
 					{
 						// Token rule
-						getState( stateName ).addDef( new TokenRuleDef( stateName, pattern, (List<String>) tokenTypeNames ) );
+						getState( stateName ).addDef( new TokenRuleDef( stateName, pattern, defaultFlags, (List<String>) tokenTypeNames ) );
 					}
 					else if( argumentsList.size() == 3 )
 					{
@@ -312,7 +380,7 @@ public class RegexLexer extends Lexer
 						if( !( nextStateNames instanceof List<?> ) )
 							throw new ResolutionException( "Expected state name or array of state names in rule in state \"" + stateName + "\"" );
 
-						getState( stateName ).addDef( new ChangeStateTokenRuleDef( stateName, pattern, (List<String>) tokenTypeNames, (List<String>) nextStateNames ) );
+						getState( stateName ).addDef( new ChangeStateTokenRuleDef( stateName, pattern, defaultFlags, (List<String>) tokenTypeNames, (List<String>) nextStateNames ) );
 					}
 					else
 						throw new ResolutionException( "Too many arguments for rule in state \"" + stateName + "\"" );

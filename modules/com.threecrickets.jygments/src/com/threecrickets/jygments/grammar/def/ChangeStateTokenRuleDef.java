@@ -31,15 +31,15 @@ public class ChangeStateTokenRuleDef extends TokenRuleDef
 	// Construction
 	//
 
-	public ChangeStateTokenRuleDef( String stateName, String pattern, List<String> tokenTypeNames, List<String> nextStateNames )
+	public ChangeStateTokenRuleDef( String stateName, String pattern, int flags, List<String> tokenTypeNames, List<String> nextStateNames )
 	{
-		super( stateName, pattern, tokenTypeNames );
+		super( stateName, pattern, flags, tokenTypeNames );
 		this.nextStateNames = nextStateNames;
 	}
 
-	public ChangeStateTokenRuleDef( String stateName, String pattern, String[] tokenTypeNames, String... nextStateNames )
+	public ChangeStateTokenRuleDef( String stateName, String pattern, int flags, String[] tokenTypeNames, String... nextStateNames )
 	{
-		super( stateName, pattern, tokenTypeNames );
+		super( stateName, pattern, flags, tokenTypeNames );
 		ArrayList<String> list = new ArrayList<String>( nextStateNames.length );
 		for( String nextStateName : nextStateNames )
 			list.add( nextStateName );

@@ -78,6 +78,11 @@ public abstract class Jygments
 		code = Util.streamToString( new FileInputStream( "/Depot/Projects/Collaborative/Prudence/python/applications/stickstick/web/static/index.html" ) );
 		lexer = Lexer.getByName( "html" );
 		highlight( code, lexer, formatter, new PrintWriter( new FileWriter( "html.html" ) ) );
+		
+		//code = Util.streamToString( new FileInputStream( "/Depot/Projects/Collaborative/Prudence/javascript/applications/prudence-test/web/dynamic/test/rhino.html"));
+		code = Util.streamToString( new FileInputStream( "/Depot/Projects/Collaborative/Prudence/clojure/applications/prudence-test/web/dynamic/test/clojure.html"));
+		lexer = Lexer.getByName( "prudenceHtml" );
+		highlight( code, lexer, formatter, new PrintWriter( new FileWriter( "prudenceHtml.html" ) ) );
 
 		//highlight( code, lexer, formatter, new PrintWriter( System.out ) );
 	}

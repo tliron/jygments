@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 /**
  * @author Tal Liron
  */
-public class TokenRule extends Rule
+public class TokenRule extends PatternRule
 {
 	//
 	// Construction
@@ -30,7 +30,8 @@ public class TokenRule extends Rule
 
 	public TokenRule( Pattern pattern, List<TokenType> tokenTypes, List<State> nextStates )
 	{
-		super( pattern, nextStates );
+		super( pattern );
+		this.nextStates = nextStates;
 		this.tokenTypes = tokenTypes;
 	}
 
@@ -43,8 +44,15 @@ public class TokenRule extends Rule
 		return tokenTypes;
 	}
 
+	public List<State> getNextStates()
+	{
+		return nextStates;
+	}
+
 	// //////////////////////////////////////////////////////////////////////////
 	// Private
 
 	private final List<TokenType> tokenTypes;
+
+	private final List<State> nextStates;
 }
