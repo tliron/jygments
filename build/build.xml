@@ -36,7 +36,9 @@
 	
 	<target name="jar" depends="compile" description="Create Jygments jar">
 		<mkdir dir="${content}/lib" />
-		<jar destfile="${content}/lib/com.threecrickets.jygments.jar" basedir="${tmp}" />
+		<jar destfile="${content}/lib/com.threecrickets.jygments.jar" basedir="${tmp}">
+			<fileset dir="${src}" includes="**/*.json" />
+		</jar>
 	</target>
 	
 	<target name="licenses" description="Fetch licences">

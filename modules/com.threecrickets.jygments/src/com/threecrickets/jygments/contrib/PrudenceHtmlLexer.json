@@ -19,7 +19,7 @@
 			[r'&\S*?;', "Name.Entity"],
 			[r'\<\!\[CDATA\[.*?\]\]\>', "Comment.Preproc"],
 			[r'<!--', "Comment", "comment"],
-            [r'<[\%\?](js|javascript|ecmascript|ejs|embeddedjavascript|rhino|rhino-nonjdk)', "Comment.Preproc", "prudence+javascript"],
+            [r'<[\%\?](js|javascript|ecmascript|ejs|embeddedjavascript|rhino-nonjdk|rhino)', "Comment.Preproc", "prudence+javascript"],
             [r'<[\%\?](python|jython|jep)', "Comment.Preproc", "prudence+python"],
             [r'<[\%\?](ruby|jruby)', "Comment.Preproc", "prudence+ruby"],
             [r'<[\%\?](groovy)', "Comment.Preproc", "prudence+groovy"],
@@ -82,7 +82,7 @@
 		
 		"python":
 		[
-            ["#using", r'.+?(?=[\%\?]>)', "javascript"]
+            ["#using", r'.+?(?=[\%\?]>)', "python"]
 		],
 		
 		"ruby":
