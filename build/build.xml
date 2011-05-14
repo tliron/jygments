@@ -43,25 +43,25 @@
 	
 	<target name="licenses" description="Fetch licences">
 		<copy todir="${content}/licenses/jackson">
-			<fileset dir="${lib}/jackson/license" />
+			<fileset dir="${lib}/jackson/license" excludes="**/.svn/" />
 		</copy>
 	</target>
 	
 	<target name="libraries" depends="jar" description="Fetch libraries">
 		<copy todir="${content}/lib">
-			<fileset dir="${lib}/jackson/lib" />
+			<fileset dir="${lib}/jackson/lib" excludes="**/.svn/" />
 		</copy>
 	</target>
 	
 	<target name="src" description="Fetch Jygments source">
 		<copy todir="${content}/src">
-			<fileset dir="${src}" />
+			<fileset dir="${src}" excludes="**/.svn/" />
 		</copy>
 	</target>
 
 	<target name="deploy" depends="src, javadoc" description="Fetch deployment">
 		<copy todir="${content}">
-			<fileset dir="${deploy}" />
+			<fileset dir="${deploy}" excludes="**/.svn/" />
 		</copy>
 	</target>
 	
