@@ -6,10 +6,10 @@
 
     "class": "regex",
 
-//    flags = re.MULTILINE | re.DOTALL
+	"flags": ["MULTILINE", "DOTALL"],
 
     //: optional Comment or Whitespace
-    //_ws = r'(?:\s|//.*?\n|/[*].*?[*]/)+'
+    "_ws": r'(?:\s|//.*?\n|/[*].*?[*]/)+',
 
     "states": {
         "root": [
