@@ -1,0 +1,11 @@
+{
+    "name": "Java Server Page",
+    "aliases": ["jsp"],
+    "filenames": ["*.jsp"],
+    "mimetypes": ["application/x-jsp"],
+
+    "class": "delegated",
+
+    "root_lexer": "XmlLexer",
+    "language_lexer": "JspRootLexer"
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Jsproot",
+    "aliases": ["jsproot"],
+    "class": "regex",
+
+    "states": {
+        "root": [
+            [r'<%\S?', "Keyword", "sec"],
+            // FIXME: I want to make these keywords but still parse attributes.
+            [r'</?jsp:(forward|getProperty|include|plugin|setProperty|useBean).*?>',
+             "Keyword"],
+            [r'[^<]+', "Other"],
+            [r'<', "Other"]
+        ],
+        "sec": [
+            [r'%>', "Keyword", "#pop"],
+            // note: '\w\W' != '.' without DOTALL.
+            ["#using", r'[\w\W]+?(?=%>|\Z)', "JavaLexer"]
+        ]
+    }
+}
