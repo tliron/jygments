@@ -71,39 +71,57 @@ public class HtmlFormatter extends Formatter
 		}
 		writer.write( "<div><pre>\n" );
 		StringBuilder line = new StringBuilder();
+		int line_no = 1;
 		for( Token token : tokenSource )
 		{
-			if( token.getValue().equals( "\n" ) )
-			{
-				writer.write( line.toString() );
-				writer.write( '\n' );
-				// writer.write( "<br />\n" );
-				line = new StringBuilder();
-			}
-			else
-			{
-				if( token.getType().getShortName().length() > 0 )
-				{
-					line.append( "<span class=\"" );
-					line.append( token.getType().getShortName() );
-					line.append( "\">" );
-					// line.append( token.getType().getName());
-					line.append( Util.escapeHtml( token.getValue() ) );
-					line.append( "</span>" );
-				}
-				else
-					line.append( Util.escapeHtml( token.getValue() ) );
-			}
+		    String tok = token.getValue();
+		    if(tok.equals("\n")) {
+	            format_line(line.toString(), writer, line_no++);
+	            line = new StringBuilder();
+	        }
+		    else if(tok.contains("\n")) {
+		        String[] toks = tok.split("\n");
+		        int last = tok.endsWith("\n") ? toks.length : toks.length - 1;
+		        int i;
+		        for(i = 0; i < last; i++) {
+		            format_partial_token(token, toks[i], line);
+		            format_line(line.toString(), writer, line_no++);
+		            line = new StringBuilder();
+                }
+                if(i < toks.length)
+                    format_partial_token(token, toks[i], line);                		        
+		    }
+		    else
+		        format_partial_token(token, tok, line);		    
 		}
-		if( line.length() > 0 )
-		{
-			writer.write( line.toString() );
-			// writer.write( "<br />\n" );
-		}
+		if(line.length() > 0)
+		    format_line(line.toString(), writer, line_no++);
+
 		writer.write( "</pre></div>\n" );
 		writer.write( DOC_FOOTER );
 		writer.flush();
 	}
+
+    private void format_partial_token(Token token, String part_tok, StringBuilder line)
+    {	
+		if( token.getType().getShortName().length() > 0 )
+		{
+			line.append( "<span class=\"" );
+			line.append( token.getType().getShortName() );
+			line.append( "\">" );
+			line.append( Util.escapeHtml( part_tok ) );
+			line.append( "</span>" );
+		}
+		else
+			line.append( Util.escapeHtml( token.getValue() ) );
+    }
+	
+	public void format_line(String line, Writer writer, int line_no) throws IOException
+    {
+        writer.write(line);
+        writer.write("\n");
+    }
+	
 
 	// //////////////////////////////////////////////////////////////////////////
 	// Private
