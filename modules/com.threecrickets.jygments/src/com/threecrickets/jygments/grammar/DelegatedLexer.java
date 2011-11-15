@@ -79,7 +79,8 @@ public class DelegatedLexer extends Lexer
                     rc.add(tt);                    
                 next_ins = li.hasNext() ? (Insertion) li.next() : null;
             }
-            rc.add(new Token(t.getPos(), t.getType(), s.substring(pos)));
+            if(pos < s.length())
+                rc.add(new Token(t.getPos(), t.getType(), s.substring(pos)));
         }
 
         // Do remaining tokens
