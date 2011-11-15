@@ -45,7 +45,7 @@ public class RegexLexer extends Lexer
 
 		int pos = 0;
 		int length = text.length();
-		while( pos < length - 1 )
+		while( pos < length )
 		{
 			int eol = text.indexOf( '\n', pos );
 			// int endRegion = eol >= 0 ? eol + 2 : length;
