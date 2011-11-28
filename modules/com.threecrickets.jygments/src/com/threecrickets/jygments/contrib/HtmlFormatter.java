@@ -53,16 +53,16 @@ public class HtmlFormatter extends Formatter
 	@Override
 	public void format( Iterable<Token> tokenSource, Writer writer ) throws IOException
 	{
-		writer.write( DOC_HEADER1 );
+		writer.write( getDocHeader1() );
 		writer.write( "  <title>" );
 		writer.write( Util.escapeHtml( getTitle() ) );
 		writer.write( "</title>\n" );
-		writer.write( DOC_HEADER2 );
+		writer.write( getDocHeader2() );
 		writer.write( getEncoding() );
-		writer.write( DOC_HEADER3 );
-		writer.write( CSSFILE_TEMPLATE );
+		writer.write( getDocHeader3() );
+		writer.write( getCssFileTemplate() );
 		formatStyleSheet( writer );
-		writer.write( DOC_HEADER4 );
+		writer.write( getDocHeader4() );
 		if( getTitle().length() > 0 )
 		{
 			writer.write( "<h2>" );
@@ -98,7 +98,7 @@ public class HtmlFormatter extends Formatter
 		    format_line(line.toString(), writer, line_no++);
 
 		writer.write( "</pre></div>\n" );
-		writer.write( DOC_FOOTER );
+		writer.write( getDocFooter() );
 		writer.flush();
 	}
 
@@ -124,21 +124,39 @@ public class HtmlFormatter extends Formatter
 	
 
 	// //////////////////////////////////////////////////////////////////////////
-	// Private
+	// Protected
 
-	private String classPrefix = "";
+	protected String getClassPrefix()
+	{
+	    return "";
+	}
 
-	private static final String CSSFILE_TEMPLATE = "    td.linenos { background-color: #f0f0f0; padding-right: 10px; }\n" + "    span.lineno { background-color: #f0f0f0; padding: 0 5px 0 5px; }\n"
+	protected String getCssFileTemplate()
+	{
+	    return "    td.linenos { background-color: #f0f0f0; padding-right: 10px; }\n" + "    span.lineno { background-color: #f0f0f0; padding: 0 5px 0 5px; }\n"
 		+ "    pre { line-height: 125%; }\n";
-
-	private static final String DOC_HEADER1 = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n" + "<html>\n" + "<head>\n";
-
-	private static final String DOC_HEADER2 = "  <meta http-equiv=\"content-type\" content=\"text/html; charset=";
-
-	private static final String DOC_HEADER3 = "\">\n" + "  <style type=\"text/css\">\n";
-
-	private static final String DOC_HEADER4 = "  </style>\n" + "</head>\n" + "<body>\n";
-
+    }
+    
+	protected String getDocHeader1()
+	{
+	    return "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n" + "<html>\n" + "<head>\n";
+    }
+    
+	protected String getDocHeader2()
+	{
+	    return "  <meta http-equiv=\"content-type\" content=\"text/html; charset=";
+    }
+    
+	protected String getDocHeader3()
+	{
+	    return "\">\n" + "  <style type=\"text/css\">\n";
+    }
+    
+	protected String getDocHeader4()
+	{
+	    return "  </style>\n" + "</head>\n" + "<body>\n";
+    }
+    
 	/*
 	 * private static final String DOC_HEADER_EXTERNAL_CSS =
 	 * "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\"\n" +
@@ -149,7 +167,13 @@ public class HtmlFormatter extends Formatter
 	 * + "</head>\n" + "<body>\n" + "<h2>%(title)s</h2>\n";
 	 */
 
-	private static final String DOC_FOOTER = "</body>\n" + "</html>\n";
+	protected String getDocFooter()
+	{
+	    return "</body>\n" + "</html>\n";
+    }
+
+	// //////////////////////////////////////////////////////////////////////////
+	// Private
 
 	private void formatStyleSheet( Writer writer ) throws IOException
 	{
@@ -158,7 +182,7 @@ public class HtmlFormatter extends Formatter
 			TokenType tokenType = entry.getKey();
 			List<StyleElement> styleElementsForTokenType = entry.getValue();
 			writer.write( "    ." );
-			writer.write( classPrefix );
+			writer.write( getClassPrefix() );
 			writer.write( tokenType.getShortName() );
 			writer.write( " { " );
 			for( StyleElement styleElement : styleElementsForTokenType )
