@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
+import java.net.URISyntaxException;
 
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
@@ -137,20 +139,35 @@ public class Lexer extends Grammar
 		return null;
 	}
 	
-	public static Lexer getForFileName( String fileName ) throws Throwable
+	public static Lexer getForFileName( String fileName ) throws ResolutionException
 	{
-        File jarFile = new File( Jygments.class.getProtectionDomain().getCodeSource().getLocation().toURI() );
-        JarInputStream jarIS = new JarInputStream( new FileInputStream(jarFile) );
-        for( JarEntry je = jarIS.getNextJarEntry(); je != null; je = jarIS.getNextJarEntry() ) {
-            if( je.getName().endsWith(".json") ) {
-                String lexerName = je.getName();
-                // strip off the .json
-                lexerName = lexerName.substring( 0, lexerName.length() - 5 );
-                Lexer lexer = Lexer.getByFullName(lexerName);
-                for( String fn : lexer.filenames )
-                    if( fileName.endsWith(fn.substring(1)) )
-                        return lexer;
+	    try
+	    {
+            File jarFile = new File( Jygments.class.getProtectionDomain().getCodeSource().getLocation().toURI() );
+            JarInputStream jarIS = new JarInputStream( new FileInputStream(jarFile) );
+            for( JarEntry je = jarIS.getNextJarEntry(); je != null; je = jarIS.getNextJarEntry() ) {
+                if( je.getName().endsWith(".json") ) {
+                    String lexerName = je.getName();
+                    // strip off the .json
+                    lexerName = lexerName.substring( 0, lexerName.length() - 5 );
+                    Lexer lexer = Lexer.getByFullName(lexerName);
+                    for( String fn : lexer.filenames )
+                        if( fileName.endsWith(fn.substring(1)) )
+                            return lexer;
+                }
             }
+        }
+        catch( URISyntaxException x )
+        {
+            throw new ResolutionException( x );
+        }
+        catch( FileNotFoundException x )
+        {
+            throw new ResolutionException( x );
+        }
+        catch( IOException x )
+        {
+            throw new ResolutionException( x );
         }
         return null;
 	}
