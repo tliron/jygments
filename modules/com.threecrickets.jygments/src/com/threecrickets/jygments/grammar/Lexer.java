@@ -138,38 +138,43 @@ public class Lexer extends Grammar
 
 		return null;
 	}
-	
+
+    private static HashMap<String,Lexer> lexer_map = null;
 	public static Lexer getForFileName( String fileName ) throws ResolutionException
 	{
-	    try
-	    {
-            File jarFile = new File( Jygments.class.getProtectionDomain().getCodeSource().getLocation().toURI() );
-            JarInputStream jarIS = new JarInputStream( new FileInputStream(jarFile) );
-            for( JarEntry je = jarIS.getNextJarEntry(); je != null; je = jarIS.getNextJarEntry() ) {
-                if( je.getName().endsWith(".json") ) {
-                    String lexerName = je.getName();
-                    // strip off the .json
-                    lexerName = lexerName.substring( 0, lexerName.length() - 5 );
-                    Lexer lexer = Lexer.getByFullName(lexerName);
-                    for( String fn : lexer.filenames )
-                        if( fileName.endsWith(fn.substring(1)) )
-                            return lexer;
+	    if(lexer_map == null) {
+            lexer_map = new HashMap<String,Lexer>();
+    	    try
+    	    {
+                File jarFile = new File( Jygments.class.getProtectionDomain().getCodeSource().getLocation().toURI() );
+                JarInputStream jarIS = new JarInputStream( new FileInputStream(jarFile) );
+                for( JarEntry je = jarIS.getNextJarEntry(); je != null; je = jarIS.getNextJarEntry() ) {
+                    if( je.getName().endsWith(".json") ) {
+                        String lexerName = je.getName();
+                        // strip off the .json
+                        lexerName = lexerName.substring( 0, lexerName.length() - 5 );
+                        Lexer lexer = Lexer.getByFullName(lexerName);
+                        for( String fn : lexer.filenames )
+                            if(fn.startsWith("*."))
+                                lexer_map.put(fn.substring(fn.lastIndexOf('.')), lexer);
+                    }
                 }
             }
+            catch( URISyntaxException x )
+            {
+                throw new ResolutionException( x );
+            }
+            catch( FileNotFoundException x )
+            {
+                throw new ResolutionException( x );
+            }
+            catch( IOException x )
+            {
+                throw new ResolutionException( x );
+            }
         }
-        catch( URISyntaxException x )
-        {
-            throw new ResolutionException( x );
-        }
-        catch( FileNotFoundException x )
-        {
-            throw new ResolutionException( x );
-        }
-        catch( IOException x )
-        {
-            throw new ResolutionException( x );
-        }
-        return null;
+
+        return lexer_map.get(fileName.substring(fileName.lastIndexOf('.')));
 	}
 	
 
