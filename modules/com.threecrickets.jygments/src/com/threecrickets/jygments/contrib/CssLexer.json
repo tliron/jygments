@@ -4,7 +4,7 @@
 
 {
 	"aliases": "css",
-	"filenames": "*.css",
+	"filenames": ["*.css"],
 	"mimetypes": "text/css",
 
 	"class": "regex",
