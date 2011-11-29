@@ -49,42 +49,12 @@ public abstract class Jygments
 	// Main
 	//
 
-	public static void main( String[] arguments ) throws IOException, ResolutionException
+	public static void main( String[] args ) throws IOException, ResolutionException
 	{
-		Formatter formatter = Formatter.getByName( "html" );
-
-		String code = " p { width: 10px; }\np { width: 10px; }\n h1 { line-height: 100%; }\n";
-		Lexer lexer = Lexer.getByName( "css" );
-		
-		/*code = Util.streamToString( new FileInputStream( "/Depot/Projects/Collaborative/Prudence/common/applications/prudence-test/web/static/style/soft-cricket.css" ) );
-		highlight( code, lexer, formatter, new PrintWriter( new FileWriter( "css.html" ) ) );
-
-		code = "from sys import out\ndef pip(a=nil):\n    pass";
-		code = "def pip(x):\n    print 'hi'\n";
-		code = "class Mine(object):\n    def pip(x=None):\n        pass\n        print x\n";
-		code = Util.streamToString( new FileInputStream( "/Depot/Projects/Collaborative/Prudence/libraries/pygments/lib/python/Lib/pygments/lexer.py" ) );
-		// System.out.println(code);
-		lexer = Lexer.getByName( "python" );
-		highlight( code, lexer, formatter, new PrintWriter( new FileWriter( "python.html" ) ) );
-
-		code = Util.streamToString( new FileInputStream( "/Depot/Projects/Collaborative/Prudence/clojure/defaults/instance/default.clj" ) );
-		lexer = Lexer.getByName( "clojure" );
-		highlight( code, lexer, formatter, new PrintWriter( new FileWriter( "clojure.html" ) ) );
-
-		code = Util.streamToString( new FileInputStream( "/Depot/Projects/Collaborative/Prudence/javascript/defaults/instance/default.js" ) );
-		lexer = Lexer.getByName( "javascript" );
-		highlight( code, lexer, formatter, new PrintWriter( new FileWriter( "javascript.html" ) ) );*/
-
-		code = Util.streamToString( new FileInputStream( "/Depot/Projects/Collaborative/Prudence/python/applications/stickstick/web/static/index.html" ) );
-		lexer = Lexer.getByName( "html" );
-		highlight( code, lexer, formatter, new PrintWriter( new FileWriter( "html.html" ) ) );
-		
-		//code = Util.streamToString( new FileInputStream( "/Depot/Projects/Collaborative/Prudence/javascript/applications/prudence-test/web/dynamic/test/rhino.html"));
-		code = Util.streamToString( new FileInputStream( "/Depot/Projects/Collaborative/Prudence/clojure/applications/prudence-test/web/dynamic/test/clojure.html"));
-		lexer = Lexer.getByName( "prudenceHtml" );
-		highlight( code, lexer, formatter, new PrintWriter( new FileWriter( "prudenceHtml.html" ) ) );
-
-		//highlight( code, lexer, formatter, new PrintWriter( System.out ) );
+        Lexer lexer = Lexer.getForFileName(args[0]);
+        Formatter formatter = Formatter.getByName("html");
+		String code = Util.streamToString(new FileInputStream(args[0]));
+		formatter.format(lexer.getTokens(code), new PrintWriter(System.out));
 	}
 
 	// //////////////////////////////////////////////////////////////////////////
