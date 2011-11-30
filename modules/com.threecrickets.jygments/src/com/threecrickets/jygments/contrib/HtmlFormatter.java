@@ -113,7 +113,7 @@ public class HtmlFormatter extends Formatter
 			line.append( "</span>" );
 		}
 		else
-			line.append( Util.escapeHtml( token.getValue() ) );
+			line.append( Util.escapeHtml( part_tok ) );
     }
 	
 	public void format_line(String line, Writer writer, int line_no) throws IOException
