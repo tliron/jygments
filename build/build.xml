@@ -36,8 +36,10 @@
 	
 	<target name="jar" depends="compile" description="Create Jygments jar">
 		<mkdir dir="${content}/lib" />
-		<jar destfile="${content}/lib/com.threecrickets.jygments.jar" basedir="${tmp}">
+		<jar destfile="${content}/lib/com.threecrickets.jygments.jar" basedir="${tmp}" manifest="MANIFEST.MF">
 			<fileset dir="${src}" includes="**/*.json" />
+			<zipfileset src="../libraries/jackson/lib/org.codehaus.jackson.jar"/>
+			<zipfileset src="../libraries/jackson/lib/org.codehaus.jackson.map.jar"/>
 		</jar>
 	</target>
 	
