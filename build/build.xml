@@ -6,11 +6,11 @@
 	<property name="deploy" value="../modules/com.threecrickets.jygments/deploy" />
 	<property name="dist" value="./distribution" />
 	<property name="content" value="${dist}/content" />
-	<property name="tmp" value="./tmp" />
+	<property name="cache" value="./cache" />
 
 	<target name="compile" description="Compile Jygments code">
-		<mkdir dir="${tmp}" />
-		<javac srcdir="${src}" destdir="${tmp}" target="1.5">
+		<mkdir dir="${cache}/classes" />
+		<javac srcdir="${src}" destdir="${cache}/classes" source="1.5" target="1.5">
 			<classpath>
 				<fileset dir="${lib}/jackson/lib" />
 			</classpath>
@@ -36,7 +36,7 @@
 	
 	<target name="jar" depends="compile" description="Create Jygments jar">
 		<mkdir dir="${content}/lib" />
-		<jar destfile="${content}/lib/com.threecrickets.jygments.jar" basedir="${tmp}" manifest="MANIFEST.MF">
+		<jar destfile="${content}/lib/com.threecrickets.jygments.jar" basedir="${cache}/classes" manifest="MANIFEST.MF">
 			<fileset dir="${src}" includes="**/*.json" />
 			<zipfileset src="../libraries/jackson/lib/org.codehaus.jackson.jar"/>
 			<zipfileset src="../libraries/jackson/lib/org.codehaus.jackson.map.jar"/>
@@ -74,7 +74,7 @@
 	<target name="build" depends="package" description="Build distribution" />
 	
 	<target name="clean" description="Clean">
-		<delete dir="${tmp}" />
+		<delete dir="${cache}" />
 		<delete dir="${dist}" />
 	</target>
 	
