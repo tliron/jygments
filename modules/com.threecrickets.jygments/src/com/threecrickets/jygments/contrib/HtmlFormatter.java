@@ -74,25 +74,13 @@ public class HtmlFormatter extends Formatter
 		int line_no = 1;
 		for( Token token : tokenSource )
 		{
-		    String tok = token.getValue();
-		    if(tok.equals("\n")) {
+	        String[] toks = token.getValue().split("\n", -1);
+	        for(int i = 0; i < toks.length - 1; i++) {
+	            format_partial_token(token, toks[i], line);
 	            format_line(line.toString(), writer, line_no++);
 	            line = new StringBuilder();
-	        }
-		    else if(tok.contains("\n")) {
-		        String[] toks = tok.split("\n");
-		        int last = tok.endsWith("\n") ? toks.length : toks.length - 1;
-		        int i;
-		        for(i = 0; i < last; i++) {
-		            format_partial_token(token, toks[i], line);
-		            format_line(line.toString(), writer, line_no++);
-		            line = new StringBuilder();
-                }
-                if(i < toks.length)
-                    format_partial_token(token, toks[i], line);                		        
-		    }
-		    else
-		        format_partial_token(token, tok, line);		    
+            }
+            format_partial_token(token, toks[toks.length-1], line);
 		}
 		if(line.length() > 0)
 		    format_line(line.toString(), writer, line_no++);
