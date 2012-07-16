@@ -25,11 +25,13 @@
 	<target name="javadoc-unless" description="Create Jygments API docs" unless="javadoc-present">
 		<javadoc access="protected" author="true" excludepackagenames="**.internal.*" destdir="${content}/doc/api" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" source="1.5" sourcepath="${src}" splitindex="true" use="true" version="true" windowtitle="Jygments 1.0" doctitle="Scipturian 1.0"  verbose="true">
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+			<link href="http://fasterxml.github.com/jackson-core/javadoc/2.0.0/" />
+			<link href="http://fasterxml.github.com/jackson-databind/javadoc/2.0.0/" />
 			<classpath>
 				<fileset dir="${lib}/jackson/lib" />
 			</classpath>
 			<bottom>
-				<![CDATA[<i>Copyright &#169; 2009-2011 <a target="_top" href="http://threecrickets.com/">Three Crickets LLC</a>.</i>]]>
+				<![CDATA[<i>Copyright &#169; 2009-2012 <a target="_top" href="http://threecrickets.com/">Three Crickets LLC</a>.</i>]]>
 			</bottom>
 		</javadoc>
 	</target>
@@ -38,8 +40,8 @@
 		<mkdir dir="${content}/lib" />
 		<jar destfile="${content}/lib/com.threecrickets.jygments.jar" basedir="${cache}/classes" manifest="MANIFEST.MF">
 			<fileset dir="${src}" includes="**/*.json" />
-			<zipfileset src="../libraries/jackson/lib/org.codehaus.jackson.jar"/>
-			<zipfileset src="../libraries/jackson/lib/org.codehaus.jackson.map.jar"/>
+			<zipfileset src="../libraries/jackson/lib/com.fasterxml.jackson.jar"/>
+			<zipfileset src="../libraries/jackson/lib/com.fasterxml.jackson.databind.jar"/>
 		</jar>
 	</target>
 	
