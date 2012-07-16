@@ -27,6 +27,7 @@
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 			<link href="http://fasterxml.github.com/jackson-core/javadoc/2.0.0/" />
 			<link href="http://fasterxml.github.com/jackson-databind/javadoc/2.0.0/" />
+			<link href="http://fasterxml.github.com/jackson-annotations/javadoc/2.0.0/" />
 			<classpath>
 				<fileset dir="${lib}/jackson/lib" />
 			</classpath>
@@ -42,6 +43,7 @@
 			<fileset dir="${src}" includes="**/*.json" />
 			<zipfileset src="../libraries/jackson/lib/com.fasterxml.jackson.jar"/>
 			<zipfileset src="../libraries/jackson/lib/com.fasterxml.jackson.databind.jar"/>
+			<zipfileset src="../libraries/jackson/lib/com.fasterxml.jackson.annotation.jar"/>
 		</jar>
 	</target>
 	
