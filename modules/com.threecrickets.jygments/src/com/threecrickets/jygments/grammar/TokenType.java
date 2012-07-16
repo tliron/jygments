@@ -1,5 +1,5 @@
 /**
- * Copyright 2010-2011 Three Cricketsckets LLC.
+ * Copyright 2010-2012 Three Crickets LLC.
  * <p>
  * The contents of this file are subject to the terms of a BSD license. See
  * attached license.txt.
