@@ -139,44 +139,51 @@ public class Lexer extends Grammar
 		return null;
 	}
 
-    private static HashMap<String,Lexer> lexer_map = null;
 	public static Lexer getForFileName( String fileName ) throws ResolutionException
 	{
-	    if(lexer_map == null) {
-            lexer_map = new HashMap<String,Lexer>();
-    	    try
-    	    {
-                File jarFile = new File( Jygments.class.getProtectionDomain().getCodeSource().getLocation().toURI() );
-                JarInputStream jarIS = new JarInputStream( new FileInputStream(jarFile) );
-                for( JarEntry je = jarIS.getNextJarEntry(); je != null; je = jarIS.getNextJarEntry() ) {
-                    if( je.getName().endsWith(".json") ) {
-                        String lexerName = je.getName();
-                        // strip off the .json
-                        lexerName = lexerName.substring( 0, lexerName.length() - 5 );
-                        Lexer lexer = Lexer.getByFullName(lexerName);
-                        for( String fn : lexer.filenames )
-                            if(fn.startsWith("*."))
-                                lexer_map.put(fn.substring(fn.lastIndexOf('.')), lexer);
-                    }
-                }
-            }
-            catch( URISyntaxException x )
-            {
-                throw new ResolutionException( x );
-            }
-            catch( FileNotFoundException x )
-            {
-                throw new ResolutionException( x );
-            }
-            catch( IOException x )
-            {
-                throw new ResolutionException( x );
-            }
-        }
+		if( lexerMap.isEmpty() )
+		{
+			try
+			{
+				File jarFile = new File( Jygments.class.getProtectionDomain().getCodeSource().getLocation().toURI() );
+				JarInputStream jarInputStream = new JarInputStream( new FileInputStream( jarFile ) );
+				try
+				{
+					for( JarEntry jarEntry = jarInputStream.getNextJarEntry(); jarEntry != null; jarEntry = jarInputStream.getNextJarEntry() )
+					{
+						if( jarEntry.getName().endsWith( ".json" ) )
+						{
+							String lexerName = jarEntry.getName();
+							// strip off the .json
+							lexerName = lexerName.substring( 0, lexerName.length() - 5 );
+							Lexer lexer = Lexer.getByFullName( lexerName );
+							for( String filename : lexer.filenames )
+								if( filename.startsWith( "*." ) )
+									lexerMap.put( filename.substring( filename.lastIndexOf( '.' ) ), lexer );
+						}
+					}
+				}
+				finally
+				{
+					jarInputStream.close();
+				}
+			}
+			catch( URISyntaxException x )
+			{
+				throw new ResolutionException( x );
+			}
+			catch( FileNotFoundException x )
+			{
+				throw new ResolutionException( x );
+			}
+			catch( IOException x )
+			{
+				throw new ResolutionException( x );
+			}
+		}
 
-        return lexer_map.get(fileName.substring(fileName.lastIndexOf('.')));
+		return lexerMap.get( fileName.substring( fileName.lastIndexOf( '.' ) ) );
 	}
-	
 
 	//
 	// Construction
@@ -324,17 +331,20 @@ public class Lexer extends Grammar
 
 	protected void addJson( Map<String, Object> json ) throws ResolutionException
 	{
-		List<String> fns = (List<String>) json.get( "filenames" );
-		if(fns == null)
-		    return;
-		for(String fn : fns)
-		    addFilename(fn);
+		@SuppressWarnings("unchecked")
+		List<String> filenames = (List<String>) json.get( "filenames" );
+		if( filenames == null )
+			return;
+		for( String filename : filenames )
+			addFilename( filename );
 	}
 
 	// //////////////////////////////////////////////////////////////////////////
 	// Private
 
 	private static final ConcurrentMap<String, Lexer> lexers = new ConcurrentHashMap<String, Lexer>();
+
+	private static final ConcurrentMap<String, Lexer> lexerMap = new ConcurrentHashMap<String, Lexer>();
 
 	private final List<Filter> filters = new ArrayList<Filter>();
 
