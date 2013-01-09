@@ -141,4 +141,11 @@
 		</plugins>
 	</build>
 
+	<repositories>
+		<repository>
+			<id>dependencies</id>
+			<url>file:/Depot/Repository</url>
+		</repository>
+	</repositories>
+
 </project>
