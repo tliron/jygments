@@ -82,7 +82,7 @@ public class Style extends NestedDef<Style>
 		if( stream != null )
 		{
 			ObjectMapper objectMapper = new ObjectMapper();
-			objectMapper.getJsonFactory().configure( JsonParser.Feature.ALLOW_COMMENTS, true );
+			objectMapper.getFactory().configure( JsonParser.Feature.ALLOW_COMMENTS, true );
 			try
 			{
 				Map<String, Object> json = objectMapper.readValue( stream, HashMap.class );
