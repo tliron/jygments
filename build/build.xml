@@ -58,6 +58,7 @@
 			author="true" splitindex="true" use="true" version="true" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false"
 			bootclasspath="${compile.boot}">
 
+			<link href="${documentation.jvm}" />
 			<classpath>
 				<fileset dir="${dependencies.jars}" includes="**/*.jar" />
 			</classpath>
