@@ -24,6 +24,7 @@
 	<property name="distribution.jars" value="${distribution.libraries}/jars/${component.group}/${component.artifact}/${component.version}${component.version.postfix}" />
 	<property name="distribution.reference" value="${distribution.content}/reference" />
 	<property name="distribution.api" value="${distribution.reference}/api/${component.group}/${component.artifact}/${component.version}${component.version.postfix}" />
+	<property name="distribution.source" value="${distribution.reference}/source" />
 
 	<macrodef name="googledrive">
 		<attribute name="suffix" />
@@ -75,6 +76,9 @@
 	</target>
 	
 	<target name="distribution" depends="libraries, javadocs" description="Assemble distribution">
+		<copy todir="${distribution.source}/${component.group}/${component.artifact}/${component.version}${component.version.postfix}">
+			<fileset dir="${component.source}" />
+		</copy>
 		<copy todir="${distribution.content}">
 			<fileset dir="${component.notices}" />
 		</copy>
