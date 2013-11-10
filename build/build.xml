@@ -1,87 +1,123 @@
 <?xml version="1.0"?>
 <project name="Jygments" default="build">
-	
-	<property name="src" value="../modules/com.threecrickets.jygments/src" />
-	<property name="lib" value="../libraries" />
-	<property name="deploy" value="../modules/com.threecrickets.jygments/deploy" />
-	<property name="dist" value="./distribution" />
-	<property name="content" value="${dist}/content" />
-	<property name="cache" value="./cache" />
 
-	<target name="compile" description="Compile Jygments code">
-		<mkdir dir="${cache}/classes" />
-		<javac srcdir="${src}" destdir="${cache}/classes" source="1.5" target="1.5" includeantruntime="false">
+	<property name="root" location="${basedir}/.." />
+
+	<property file="${root}/build/private.properties" />
+	<property file="${root}/build/custom.properties" />
+
+	<property name="component.source" location="${root}/components/${component}/source" />
+	<property name="component.resources" value="${root}/components/${component}/resources" />
+	<property name="component.notices" value="${root}/components/notices" />
+
+	<property name="dependencies" location="${root}/dependencies" />
+	<property name="dependencies.jars" value="${dependencies}/libraries/jars" />
+
+	<property name="cache" location="${root}/build/cache" />
+	<property name="cache.classes" location="${cache}/classes" />
+	<property name="cache.maven.pom" location="${cache}/maven/pom" />
+	<property name="cache.maven.build" location="${cache}/maven/build" />
+
+	<property name="distribution" location="${root}/build/distribution" />
+	<property name="distribution.content" location="${distribution}/content" />
+	<property name="distribution.libraries" value="${distribution.content}/libraries" />
+	<property name="distribution.jars" value="${distribution.libraries}/jars/${component.group}/${component.artifact}/${component.version}${component.version.postfix}" />
+	<property name="distribution.reference" value="${distribution.content}/reference" />
+	<property name="distribution.api" value="${distribution.reference}/api/${component.group}/${component.artifact}/${component.version}${component.version.postfix}" />
+
+	<macrodef name="googledrive">
+		<attribute name="suffix" />
+		<sequential>
+			<copy
+				file="${distribution}/${component}-${component.version}${component.version.postfix}@{suffix}"
+				todir="${googledrive.repo}/${googledrive.section}/${component.version}${component.version.postfix}"
+				failonerror="false" />
+		</sequential>
+	</macrodef>
+
+	<target name="classes" description="Compile Java code">
+		<mkdir dir="${cache.classes}" />
+		<javac srcdir="${component.source}" destdir="${cache.classes}" source="${compile.version}" target="${compile.version}" includeAntRuntime="no" debug="${compile.debug}" bootclasspath="${compile.boot}">
 			<classpath>
-				<fileset dir="${lib}/jackson/lib" />
+				<fileset dir="${dependencies.jars}" includes="**/*.jar" />
 			</classpath>
 		</javac>
 	</target>
 
-	<target name="javadoc" description="Create Jygments API docs">
-		<available file="${content}/doc/api" property="javadoc-present" />
-		<antcall target="javadoc-unless" />
+	<target name="javadocs" description="Create API documentation if not present">
+		<available file="${distribution.api}" property="javadocs-present" />
+		<antcall target="javadocs-overwrite" />
 	</target>
 
-	<target name="javadoc-unless" description="Create Jygments API docs" unless="javadoc-present">
-		<javadoc access="protected" author="true" excludepackagenames="**.internal.*" destdir="${content}/doc/api" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" source="1.5" sourcepath="${src}" splitindex="true" use="true" version="true" windowtitle="Jygments 1.0" doctitle="Scipturian 1.0"  verbose="true">
-			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
-			<link href="http://fasterxml.github.io/jackson-core/javadoc/2.2.0/" />
-			<link href="http://fasterxml.github.io/jackson-databind/javadoc/2.2.0/" />
-			<link href="http://fasterxml.github.io/jackson-annotations/javadoc/2.2.0/" />
+	<target name="javadocs-overwrite" description="Create API documentation" unless="javadocs-present">
+		<javadoc
+			destdir="${distribution.api}" sourcepath="${component.source}" excludepackagenames="**.internal.*"
+			access="protected" source="${compile.version}"
+			windowtitle="${documentation.title} ${component.version}${component.version.postfix}" doctitle="${documentation.title} ${component.version}${component.version.postfix}"
+			author="true" splitindex="true" use="true" version="true" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false"
+			bootclasspath="${compile.boot}">
+
 			<classpath>
-				<fileset dir="${lib}/jackson/lib" />
+				<fileset dir="${dependencies.jars}" includes="**/*.jar" />
 			</classpath>
 			<bottom>
-				<![CDATA[<i>Copyright &#169; 2009-2013 <a target="_top" href="http://threecrickets.com/">Three Crickets LLC</a>.</i>]]>
+				<![CDATA[<i>${documentation.copyright}</i>]]>
 			</bottom>
 		</javadoc>
 	</target>
-	
-	<target name="jar" depends="compile" description="Create Jygments jar">
-		<mkdir dir="${content}/lib" />
-		<jar destfile="${content}/lib/com.threecrickets.jygments.jar" basedir="${cache}/classes" manifest="MANIFEST.MF">
-			<fileset dir="${src}" includes="**/*.json" />
-			<zipfileset src="../libraries/jackson/lib/com.fasterxml.jackson.jar"/>
-			<zipfileset src="../libraries/jackson/lib/com.fasterxml.jackson.databind.jar"/>
-			<zipfileset src="../libraries/jackson/lib/com.fasterxml.jackson.annotation.jar"/>
-		</jar>
-	</target>
-	
-	<target name="licenses" description="Fetch licences">
-		<copy todir="${content}/licenses/jackson">
-			<fileset dir="${lib}/jackson/license" excludes="**/.svn/" />
+
+	<target name="libraries" depends="classes" description="Create Jygments jar">
+		<mkdir dir="${distribution.jars}" />
+		<jar destfile="${distribution.jars}/${component.artifact}.jar" basedir="${cache.classes}" manifest="${component.resources}/MANIFEST.MF" />
+		<copy todir="${distribution.libraries}/jars">
+			<fileset dir="${dependencies.jars}" includes="**/*.jar" />
 		</copy>
 	</target>
 	
-	<target name="libraries" depends="jar" description="Fetch libraries">
-		<copy todir="${content}/lib">
-			<fileset dir="${lib}/jackson/lib" excludes="**/.svn/" />
-		</copy>
-	</target>
-	
-	<target name="src" description="Fetch Jygments source">
-		<copy todir="${content}/src">
-			<fileset dir="${src}" excludes="**/.svn/" />
+	<target name="distribution" depends="libraries, javadocs" description="Assemble distribution">
+		<copy todir="${distribution.content}">
+			<fileset dir="${component.notices}" />
 		</copy>
 	</target>
 
-	<target name="deploy" depends="src, javadoc" description="Fetch deployment">
-		<copy todir="${content}">
-			<fileset dir="${deploy}" excludes="**/.svn/" />
+	<target name="package" depends="distribution" description="Create zip distribution package">
+		<zip destfile="${distribution}/${component}-${component.version}${component.version.postfix}.zip">
+			<zipfileset dir="${distribution.content}" />
+		</zip>
+	</target>
+
+	<target name="deploy-maven" if="maven" depends="distribution" description="Deploy to Maven repository">
+		<delete dir="${cache.maven.pom}" />
+		<delete dir="${cache.maven.build}" />
+		<copy todir="${cache.maven.pom}">
+			<fileset dir="maven" excludes="**/*~" />
+			<filterchain>
+				<replacetokens>
+					<token key="VERSION" value="${component.version}${component.version.postfix}" />
+					<token key="DEPENDENCIES" value="${dependencies.repo}" />
+					<token key="ROOT" value="${root}" />
+					<token key="CACHE" value="${cache.maven.build}" />
+					<token key="CONTENT" value="${distribution.content}" />
+				</replacetokens>
+			</filterchain>
 		</copy>
+		<exec executable="${maven}" dir="${cache.maven.pom}">
+			<arg value="deploy" />
+			<arg value="-DaltDeploymentRepository=default::default::${distribution.repo}" />
+		</exec>
 	</target>
-	
-	<target name="package" depends="libraries, licenses, deploy" description="Create Jygments zip">
-		<zip destfile="${dist}/jygments.zip" basedir="${content}" includes="**/*" />
+
+	<target name="deploy-googledrive" if="googledrive.repo" description="Deploy to Google Drive">
+		<googledrive suffix=".zip" />
 	</target>
-	
-	<target name="build" depends="package" description="Build distribution" />
+
+	<target name="build" depends="distribution" description="Build distribution" />
 	
 	<target name="clean" description="Clean">
 		<delete dir="${cache}" />
-		<delete dir="${dist}" />
+		<delete dir="${distribution}" />
 	</target>
 	
-	<target name="rebuild" depends="clean, build" description="Clean and build distribution" />
+	<target name="rebuild" depends="clean, build" description="First clean and then build distribution" />
 
 </project>

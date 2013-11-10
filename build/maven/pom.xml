@@ -5,7 +5,7 @@
 
 	<groupId>com.threecrickets.jygments</groupId>
 	<artifactId>jygments</artifactId>
-	<version>0.9.1</version>
+	<version>@VERSION@</version>
 	<packaging>pom</packaging>
 
 	<name>Jygments</name>
@@ -49,38 +49,9 @@
 	</dependencies>
 
 	<build>
-		<directory>../cache/maven</directory>
+		<directory>@CACHE@</directory>
 
 		<plugins>
-			<!-- Delegate to the Ant build script -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.7</version>
-				<executions>
-					<execution>
-						<phase>generate-resources</phase>
-						<configuration>
-							<tasks>
-								<ant dir=".." antfile="build.xml" target="jar" />
-							</tasks>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>com.sun</groupId>
-						<artifactId>tools</artifactId>
-						<version>${java.vm.version}</version>
-						<scope>system</scope>
-						<systemPath>${java.home}/../lib/tools.jar</systemPath>
-					</dependency>
-				</dependencies>
-			</plugin>
-
 			<!-- jar artifact -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -97,7 +68,7 @@
 							<artifacts>
 								<artifact>
 									<type>jar</type>
-									<file>../distribution/content/lib/com.threecrickets.jygments.jar</file>
+									<file>@CONTENT@/libraries/jars/com.threecrickets.jygments/jygments/${project.version}/jygments.jar</file>
 								</artifact>
 							</artifacts>
 						</configuration>
@@ -119,20 +90,20 @@
 						</goals>
 						<configuration>
 							<classifier>javadoc</classifier>
-							<classesDirectory>../distribution/content/doc/api</classesDirectory>
+							<classesDirectory>@CONTENT@/reference/api/com.threecrickets.jygments/jygments/${project.version}</classesDirectory>
 						</configuration>
 					</execution>
 
 					<!-- sources artifact -->
 					<execution>
-						<id>source</id>
+						<id>sources</id>
 						<phase>package</phase>
 						<goals>
 							<goal>jar</goal>
 						</goals>
 						<configuration>
 							<classifier>sources</classifier>
-							<classesDirectory>../distribution/content/src</classesDirectory>
+							<classesDirectory>@CONTENT@/reference/source/com.threecrickets.jygments/jygments/${project.version}</classesDirectory>
 						</configuration>
 					</execution>
 				</executions>
@@ -144,7 +115,7 @@
 	<repositories>
 		<repository>
 			<id>dependencies</id>
-			<url>file:/Depot/Repository</url>
+			<url>@DEPENDENCIES@</url>
 		</repository>
 	</repositories>
 
