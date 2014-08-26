@@ -43,6 +43,9 @@
 				<fileset dir="${dependencies.jars}" includes="**/*.jar" />
 			</classpath>
 		</javac>
+		<copy todir="${cache.classes}">
+			<fileset dir="${component.source}" includes="**/*.json" />
+		</copy>
 	</target>
 
 	<target name="javadocs" description="Create API documentation if not present">

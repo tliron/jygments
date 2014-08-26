@@ -52,7 +52,10 @@ public class Style extends NestedDef<Style>
 			// Try contrib package
 			String pack = Jygments.class.getPackage().getName() + ".contrib";
 			name = pack + "." + name;
-			return getByFullName( name );
+			style = getByFullName( name );
+			if( style == null )
+				throw new ResolutionException( "Could not load style: " + name );
+			return style;
 		}
 	}
 
@@ -79,6 +82,7 @@ public class Style extends NestedDef<Style>
 		}
 
 		InputStream stream = Jygments.class.getClassLoader().getResourceAsStream( fullName.replace( '.', '/' ) + ".json" );
+		System.out.println( fullName.replace( '.', '/' ) + ".json " + stream );
 		if( stream != null )
 		{
 			ObjectMapper objectMapper = new ObjectMapper();
