@@ -10,12 +10,12 @@
 
 	<name>Jygments</name>
 	<description>A source code syntax highlighter.</description>
-	<url>https://code.google.com/p/jygments/</url>
+	<url>https://github.com/tliron/jygments</url>
 	<inceptionYear>2010</inceptionYear>
 
 	<scm>
-		<connection>scm:git:https://code.google.com/p/jygments/</connection>
-		<url>http://code.google.com/p/jygments/source/browse/</url>
+		<connection>scm:git:git://github.com/tliron/jygments.git</connection>
+		<url>https://github.com/tliron/jygments</url>
 	</scm>
 
 	<organization>
@@ -26,7 +26,7 @@
 	<licenses>
 		<license>
 			<name>BSD-style License</name>
-			<url>https://code.google.com/p/jygments/source/browse/modules/com.threecrickets.jygments/deploy/license.txt</url>
+			<url>https://github.com/tliron/jygments/blob/master/LICENSE.txt</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>

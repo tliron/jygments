@@ -5,7 +5,7 @@ Jygments
 Jygments is a generic syntax highlighter for general use in all kinds of software such as
 forum systems, wikis or other applications that need to prettify source code. 
 
-See the [Jygments web site](https://code.google.com/p/jygments/) for more information.
+See the [Jygments web site](https://github.com/tliron/jygments) for more information.
 
 
 Building Jygments

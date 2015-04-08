@@ -7,4 +7,4 @@ forum systems, wikis or other applications that need to prettify source code.
 
 See the Jygments web site for more information:
 
-https://code.google.com/p/jygments/
+https://github.com/tliron/jygments
