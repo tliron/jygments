@@ -26,12 +26,12 @@
 	<property name="distribution.api" value="${distribution.reference}/api/${component.group}/${component.artifact}/${component.version}${component.version.postfix}" />
 	<property name="distribution.source" value="${distribution.reference}/source" />
 
-	<macrodef name="googledrive">
+	<macrodef name="packages">
 		<attribute name="suffix" />
 		<sequential>
 			<copy
 				file="${distribution}/${component}-${component.version}${component.version.postfix}@{suffix}"
-				todir="${googledrive.repo}/${googledrive.section}/${component.version}${component.version.postfix}"
+				todir="${packages.repo}/${packages.section}/${component.version}${component.version.postfix}"
 				failonerror="false" />
 		</sequential>
 	</macrodef>
@@ -115,8 +115,8 @@
 		</exec>
 	</target>
 
-	<target name="deploy-googledrive" if="googledrive.repo" description="Deploy to Google Drive">
-		<googledrive suffix=".zip" />
+	<target name="deploy-packages" if="packages.repo" description="Deploy to packages repository">
+		<packages suffix=".zip" />
 	</target>
 
 	<target name="build" depends="distribution" description="Build distribution" />
