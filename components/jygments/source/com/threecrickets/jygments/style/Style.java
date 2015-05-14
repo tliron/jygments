@@ -82,7 +82,6 @@ public class Style extends NestedDef<Style>
 		}
 
 		InputStream stream = Jygments.class.getClassLoader().getResourceAsStream( fullName.replace( '.', '/' ) + ".json" );
-		System.out.println( fullName.replace( '.', '/' ) + ".json " + stream );
 		if( stream != null )
 		{
 			ObjectMapper objectMapper = new ObjectMapper();
