@@ -73,7 +73,14 @@
 
 	<target name="libraries" depends="classes" description="Create Jygments jar">
 		<mkdir dir="${distribution.jars}" />
-		<jar destfile="${distribution.jars}/${component.artifact}.jar" basedir="${cache.classes}" manifest="${component.resources}/MANIFEST.MF" />
+		<jar destfile="${distribution.jars}/${component.artifact}.jar" basedir="${cache.classes}">
+			<manifest>
+				<attribute name="Main-Class" value="com.threecrickets.jygments.Jygments" />
+				<attribute name="Implementation-Title" value="${component.group}:${component.artifact}" />
+				<attribute name="Implementation-Version" value="${component.version}${component.version.postfix}" />
+				<attribute name="Implementation-Vendor" value="Three Crickets" />
+			</manifest>
+		</jar>
 		<copy todir="${distribution.libraries}/jars">
 			<fileset dir="${dependencies.jars}" includes="**/*.jar" />
 		</copy>
